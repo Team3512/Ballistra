@@ -52,6 +52,6 @@ std::pair <float,float> KateKinect::GetArmScale(){
 	 p.first = RightScale;
 	 p.second = LeftScale;
 	 return p;
-	 
-	
+
+
 }

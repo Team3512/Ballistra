@@ -21,7 +21,7 @@ robot::robot() {
 	kinect = new KateKinect();
 	robotPosition = new RobotPosition(10,9,8,7);
 
-	
+
 	logger1 = new Logger ();
 	ls = new LogStream(logger1);
 	logFileSink = new LogFileSink("LogFile.txt");
@@ -31,7 +31,7 @@ robot::robot() {
 	logFileSink->setVerbosityLevels(LogEvent::VERBOSE_ALL);
 	logServerSink->setVerbosityLevels(LogEvent::VERBOSE_ALL);
 	logServerSink->startServer (4097);
-	
+
 	robotDrive = new RobotDrive (driveFR, driveRR, driveFL, driveRL);
 }
 robot::~robot(){
@@ -78,6 +78,8 @@ void robot::Autonomous(){
 		Wait (0.5);
 		i++;
 	}
+
+
 }
 void robot::Disabled(){
 	while (IsDisabled()){
@@ -91,6 +93,7 @@ void robot::Test(){
 	encoder->Start();
 	encoder->SetDistancePerPulse(60.0/360);
 
+
 	testDriveTrain(true, true, -1, 1);
 	testDriveTrain(true,false, -1, 1);
 	testDriveTrain(false, true, -1, 1);
@@ -100,7 +103,9 @@ void robot::Test(){
 bool robot::testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound){
 	timer42->Start();
 	timer42->Reset();
-	int i = 0;
+	int i;
+	i = 0;
+
 	if (shifterState == true){
 		shifter->Set(true);
 	}
@@ -119,8 +124,11 @@ bool robot::testDriveTrain(bool shifterState, bool direction, float lowerBound,f
 		if(!(lowerBound<encoder->GetRate() && encoder->GetRate()<upperBound)){
 			return false;
 		}
+
+
 	}
 	return true;
+
 }
 
 void robot::OperatorControl() {
@@ -137,6 +145,7 @@ void robot::OperatorControl() {
     //std::stringstream *ss;
 	//ss = new std::stringstream();
 	robotPosition->zeroValues();
+
 
 	while (IsOperatorControl() && IsEnabled()){
 	 if(timer3->HasPeriodPassed(0.05)){
@@ -203,6 +212,6 @@ void robot::OperatorControl() {
 		shooterBM->Set(0);
 	}
 	}
-	
+
 }
 START_ROBOT_CLASS(robot);

@@ -23,7 +23,7 @@ RobotPosition::RobotPosition(float rightPort1,float rightPort2,float leftPort1,f
 	timerCurrent3 = 0;
 	timerLast3 = 0;
 	timerCurrent4 = 0;
-	timerLast4 = 0;	
+	timerLast4 = 0;
 	timerCurrent5 = 0;
 	timerLast5 = 0;
 	y = 0;
@@ -31,8 +31,8 @@ RobotPosition::RobotPosition(float rightPort1,float rightPort2,float leftPort1,f
 	total = 0;
 	encoder->SetDistancePerPulse((3.14*6.0)/360);
 	leftEncoder->SetDistancePerPulse((3.14*6.0)/250);
-	
-}	
+
+}
 RobotPosition::~RobotPosition(){
 	delete timer4;
 	delete timer1;
@@ -41,14 +41,14 @@ RobotPosition::~RobotPosition(){
 	delete timer5;
 	delete encoder;
 	delete leftEncoder;
-	
+
 }
 float RobotPosition::deltaT(){
 	timerCurrent1 = timer1->Get();
 	float temp = timerCurrent1 - timerLast1;
 	timerLast1 = timerCurrent1;
 	return temp;
-	
+
 }
 void RobotPosition::zeroValues(){
 	encoder->Reset();
@@ -61,7 +61,7 @@ void RobotPosition::zeroValues(){
 	timerCurrent3 = 0;
 	timerLast3 = 0;
 	timerCurrent4 = 0;
-	timerLast4 = 0;	
+	timerLast4 = 0;
 	timerCurrent5 = 0;
 	timerLast5 = 0;
 	y = 0;
@@ -99,19 +99,19 @@ float RobotPosition::GetPosition(){
 float RobotPosition::GetY(){
 	timerCurrent3 = timer3->Get();
 	ThetaTotal();
-	//Wait (.01);	
+	//Wait (.01);
 	y = y + (((encoder->GetRate()+(leftEncoder->GetRate())*-1)/2)*sin(thetaTotal))*(timerCurrent3-timerLast3);
 	timerLast3 = timerCurrent3;
 	return y;
-		
+
 }
 
 float RobotPosition::GetX(){
 	timerCurrent4 = timer4->Get();
 	ThetaTotal();
-	//Wait(.01);	
+	//Wait(.01);
 	x = x + (((encoder->GetRate()+(leftEncoder->GetRate())*-1)/2)*cos(thetaTotal))*(timerCurrent4-timerLast4);
 	timerLast4 = timerCurrent4;
 	return x;
-		
+
 }

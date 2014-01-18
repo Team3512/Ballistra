@@ -35,5 +35,5 @@ private:
 	float y ;
 	float x;
 	float total;
-	
+
 };

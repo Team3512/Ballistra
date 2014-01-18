@@ -34,7 +34,7 @@ class robot : public SimpleRobot {
 		void Test ();
 		bool testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound);
 
-	
+
 	private:
 		Talon *driveFR;
 	    Talon *driveRR;
