@@ -2,7 +2,7 @@
 
 class KateKinect {
 	public:
-		std::pair<float, float> GetArmSlope();
+		std::pair<float, float> GetArmScale();
 		KateKinect();
 	
 	private:

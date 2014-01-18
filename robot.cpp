@@ -1,34 +1,36 @@
 #include "robot.hpp"
-#include <timer.h>
-#include <Solenoid.h>
 
 robot::robot() {
-	driveFR = new Talon (1);
-	driveRR = new Talon (2);
+	driveFR = new Talon (7);
+	driveRR = new Talon (1);
 	driveFL = new Talon (3);
-	driveRL = new Talon (4);
+	driveRL = new Talon (5);
 	driveStick1 = new Joystick (2);
 	driveStick2 = new Joystick (1);
+	shootStick = new Joystick (3);
 	shooterFM = new Victor (5);
 	shooterBM = new Victor (6);
 	shooter = new Solenoid (2);
 	mainCompressor = new Compressor (1,1);
 	timer = new Timer ();
 	timer2 = new Timer ();
+	timer42 = new Timer ();
+	encoder = new Encoder(8,7);
 	shooterHeight = new Solenoid (3);
 	shifter = new Solenoid (7);
-	counter = new Counter (10);
 	kinect = new KateKinect();
+	robotPosition = new RobotPosition(10,9,8,7);
 
 	
 	logger1 = new Logger ();
 	ls = new LogStream(logger1);
-	consoleSink = new LogConsoleSink();
 	logFileSink = new LogFileSink("LogFile.txt");
-	logger1 ->addLogSink(consoleSink);
+	logServerSink = new LogServerSink();
 	logger1 ->addLogSink(logFileSink);
-	consoleSink->setVerbosityLevels(LogEvent::VERBOSE_ALL);
+	logger1->addLogSink(logServerSink);
 	logFileSink->setVerbosityLevels(LogEvent::VERBOSE_ALL);
+	logServerSink->setVerbosityLevels(LogEvent::VERBOSE_ALL);
+	logServerSink->startServer (4097);
 	
 	robotDrive = new RobotDrive (driveFR, driveRR, driveFL, driveRL);
 }
@@ -39,12 +41,14 @@ robot::~robot(){
 	delete driveRL;
 	delete driveStick1;
 	delete driveStick2;
+	delete shootStick;
 	delete shooterFM;
 	delete shooterBM;
 	delete shooter;
 	delete mainCompressor;
 	delete timer;
 	delete timer2;
+	delete timer42;
 	delete shooterHeight;
 	delete shifter;
 	delete counter;
@@ -53,12 +57,13 @@ robot::~robot(){
 	delete ls;
 	delete consoleSink;
 	delete logFileSink;
+	delete logServerSink;
 	delete robotDrive;
 }
 void robot::Autonomous(){
 	int i = 0;
 	mainCompressor->Start();
-	
+
 	while(!timer2->HasPeriodPassed(3.0)){
 		robotDrive->ArcadeDrive(1,1,false);
 		timer2->Start();
@@ -73,7 +78,49 @@ void robot::Autonomous(){
 		Wait (0.5);
 		i++;
 	}
+}
+void robot::Disabled(){
+	while (IsDisabled()){
+		 logServerSink->acceptor(false);
+		 Wait (1.0);
+	}
+}
 
+void robot::Test(){
+	mainCompressor->Start();
+	encoder->Start();
+	encoder->SetDistancePerPulse(60.0/360);
+
+	testDriveTrain(true, true, -1, 1);
+	testDriveTrain(true,false, -1, 1);
+	testDriveTrain(false, true, -1, 1);
+	testDriveTrain(false, false, -1, 1);
+	robotDrive->ArcadeDrive(0,0,false);
+}
+bool robot::testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound){
+	timer42->Start();
+	timer42->Reset();
+	int i = 0;
+	if (shifterState == true){
+		shifter->Set(true);
+	}
+	else{
+		shifter->Set(false);
+	}
+	if (direction == true){
+		i = 1;
+	}
+	else{
+		i = -1;
+	}
+	while (!timer42->HasPeriodPassed(3.0)){
+		robotDrive->ArcadeDrive(i, 0, false);
+		Wait (0.1);
+		if(!(lowerBound<encoder->GetRate() && encoder->GetRate()<upperBound)){
+			return false;
+		}
+	}
+	return true;
 }
 
 void robot::OperatorControl() {
@@ -83,74 +130,74 @@ void robot::OperatorControl() {
 	bool triggerLastPressed = false;
 	bool triggerCurrentlyPressed = false;
 	mainCompressor->Start();
-	counter->Start();
 	Timer *timer3;
 	timer3 = new Timer();
+	timer3->Reset();
 	timer3->Start();
-    std::stringstream *ss;
-	ss = new std::stringstream();
+    //std::stringstream *ss;
+	//ss = new std::stringstream();
+	robotPosition->zeroValues();
 
-	
-	
-	while (IsOperatorControl()){
-	 //s = kinect->GetSkeleton();	
-	 
-	 if(timer3->HasPeriodPassed(1.0)){
-		// xDistance = s->GetHandRight().x - s->GetHandLeft().x;
-		// yDistance = s->GetHandRight().y - s->GetHandLeft().y;
-		 //(*ss) << 60/counter->GetPeriod();
-		 (*ls) << SetLogLevel(LogEvent::VERBOSE_INFO) << kinect->GetArmSlope().first << std::flush;
-		 (*ls) << SetLogLevel(LogEvent::VERBOSE_INFO) << kinect->GetArmSlope().second << std::flush;
-		 //(*ls)<<SetLogLevel(LogEvent::VERBOSE_INFO)<<s->GetHandRight().x<<std::flush;
-		 //(*ls) <<SetLogLevel(LogEvent::VERBOSE_LEVEL)<<sqrtf(xDistance*xDistance + yDistance*yDistance);<<std::flush;
-		 //logger1->logEvent(LogEvent( ss->str(), LogEvent::VERBOSE_INFO));
-		 //ss->str("");
+	while (IsOperatorControl() && IsEnabled()){
+	 if(timer3->HasPeriodPassed(0.05)){
+		 //(*ls) << SetLogLevel(LogEvent::VERBOSE_INFO) << kinect->GetArmScale().second << std::flush;
+		 //logServerSink->acceptor(false);
+		 DriverStationLCD *userMessages = DriverStationLCD::GetInstance();
+		 userMessages->Clear();
+		 userMessages->Printf(DriverStationLCD::kUser_Line1, 1,"Right Distance : %f",robotPosition->GetEncoder()*(1.0/360)*(2*3.14*3.0));
+		 userMessages->Printf(DriverStationLCD::kUser_Line2, 1,"Left Distance: %f",robotPosition->GetLeftEncoder()* (1.0/250)*(2*3.14*3.0));
+		 userMessages->Printf(DriverStationLCD::kUser_Line3, 1," x: %f", robotPosition->GetX() );
+		 userMessages->Printf(DriverStationLCD::kUser_Line4, 1," y: %f", robotPosition->GetY() );
+		 userMessages->UpdateLCD();
 	 }
-		 
-	
-	//arcade drive
-	robotDrive->ArcadeDrive(driveStick1->GetX(),driveStick2->GetY(), false);
-	//sets shifter
+
+	 //Kinect Drive
+	 //robotDrive->TankDrive(kinect->GetArmScale().second,kinect->GetArmScale().first);
+
+	//arcade Drive
+	robotDrive->ArcadeDrive(driveStick1->GetY(),driveStick2->GetX(), false);
+
+	//Set Shifter
 	triggerCurrentlyPressed = driveStick1->GetRawButton(1);
-	
+
 	if (triggerCurrentlyPressed == false && triggerLastPressed == true){
 		shifter->Set(!shifter->Get());
 	}
 	triggerLastPressed = triggerCurrentlyPressed;
-	
-	//shoots frisbee
-	if (driveStick2->GetRawButton(1)){
+
+	//Shoots Frisbee
+	if (shootStick->GetRawButton(1)){
 		shooter->Set(true);
 		timer->Start();
 	}
-	
+
 	if (timer->HasPeriodPassed(0.5)){
 		shooter->Set(false);
 		timer->Stop();
 	}
-	//sets shoter angle
-	if (driveStick2->GetRawButton(3)){
+	//Sets Shooter Angle
+	if (shootStick->GetRawButton(3)){
 		b3CurrentlyPressed = true;
 		b2CurrentlyPressed = false;
 	}
 	if (b3CurrentlyPressed == true){
 		shooterHeight->Set(true);
 	}
-	if (driveStick2->GetRawButton(2)){
+	if (shootStick->GetRawButton(2)){
 		b2CurrentlyPressed = true;
 	}
 	if (b2CurrentlyPressed == true){
 		shooterHeight->Set(false);
 	}
-	//sets shooter wheels
-	if ( driveStick2->GetRawButton(5) ){
+	//Sets Shooter Wheels
+	if ( shootStick->GetRawButton(5) ){
 		b5CurrentlyPressed = true;
 	}
 	if (b5CurrentlyPressed == true){
 		shooterFM->Set(driveStick2->GetZ());
 		shooterBM->Set(driveStick2->GetZ());
 	}
-	if ( driveStick2->GetRawButton (4)){
+	if ( shootStick->GetRawButton (4)){
 		b5CurrentlyPressed = false;
 		shooterFM->Set(0);
 		shooterBM->Set(0);
