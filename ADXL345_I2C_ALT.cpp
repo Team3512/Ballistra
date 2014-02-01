@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
 /*----------------------------------------------------------------------------*/
@@ -22,20 +22,20 @@ constexpr double ADXL345_I2C_ALT::kGsPerLSB;
  * @param range The range (+ or -) that the accelerometer will measure.
  */
 ADXL345_I2C_ALT::ADXL345_I2C_ALT(uint8_t moduleNumber, ADXL345_I2C_ALT::DataFormat_Range range)
-	: m_i2c (NULL)
+    : m_i2c (NULL)
 {
-	DigitalModule *module = DigitalModule::GetInstance(moduleNumber);
-	if (module)
-	{
-		m_i2c = module->GetI2C(kAddress);
+    DigitalModule *module = DigitalModule::GetInstance(moduleNumber);
+    if (module)
+    {
+        m_i2c = module->GetI2C(kAddress);
 
-		// Turn on the measurements
-		m_i2c->Write(kPowerCtlRegister, kPowerCtl_Measure);
-		// Specify the data format to read
-		m_i2c->Write(kDataFormatRegister, kDataFormat_FullRes | (uint8_t)range);
+        // Turn on the measurements
+        m_i2c->Write(kPowerCtlRegister, kPowerCtl_Measure);
+        // Specify the data format to read
+        m_i2c->Write(kDataFormatRegister, kDataFormat_FullRes | (uint8_t)range);
 
-		nUsageReporting::report(nUsageReporting::kResourceType_ADXL345, nUsageReporting::kADXL345_I2C, moduleNumber - 1);
-	}
+        nUsageReporting::report(nUsageReporting::kResourceType_ADXL345, nUsageReporting::kADXL345_I2C, moduleNumber - 1);
+    }
 }
 
 /**
@@ -43,8 +43,8 @@ ADXL345_I2C_ALT::ADXL345_I2C_ALT(uint8_t moduleNumber, ADXL345_I2C_ALT::DataForm
  */
 ADXL345_I2C_ALT::~ADXL345_I2C_ALT()
 {
-	delete m_i2c;
-	m_i2c = NULL;
+    delete m_i2c;
+    m_i2c = NULL;
 }
 
 /**
@@ -55,15 +55,15 @@ ADXL345_I2C_ALT::~ADXL345_I2C_ALT()
  */
 double ADXL345_I2C_ALT::GetAcceleration(ADXL345_I2C_ALT::Axes axis)
 {
-	int16_t rawAccel = 0;
-	if(m_i2c)
-	{
-		m_i2c->Read(kDataRegister + (uint8_t)axis, sizeof(rawAccel), (uint8_t *)&rawAccel);
+    int16_t rawAccel = 0;
+    if(m_i2c)
+    {
+        m_i2c->Read(kDataRegister + (uint8_t)axis, sizeof(rawAccel), (uint8_t *)&rawAccel);
 
-		// Sensor is little endian... swap bytes
-		rawAccel = ((rawAccel >> 8) & 0xFF) | (rawAccel << 8);
-	}
-	return rawAccel * kGsPerLSB;
+        // Sensor is little endian... swap bytes
+        rawAccel = ((rawAccel >> 8) & 0xFF) | (rawAccel << 8);
+    }
+    return rawAccel * kGsPerLSB;
 }
 
 /**
@@ -73,21 +73,21 @@ double ADXL345_I2C_ALT::GetAcceleration(ADXL345_I2C_ALT::Axes axis)
  */
 ADXL345_I2C_ALT::AllAxes ADXL345_I2C_ALT::GetAccelerations()
 {
-	AllAxes data = {0.0};
-	int16_t rawData[3];
-	if (m_i2c)
-	{
-		m_i2c->Read(kDataRegister, sizeof(rawData), (uint8_t*)rawData);
+    AllAxes data = {0.0};
+    int16_t rawData[3];
+    if (m_i2c)
+    {
+        m_i2c->Read(kDataRegister, sizeof(rawData), (uint8_t*)rawData);
 
-		// Sensor is little endian... swap bytes
-		for (int32_t i=0; i<3; i++)
-		{
-			rawData[i] = ((rawData[i] >> 8) & 0xFF) | (rawData[i] << 8);
-		}
+        // Sensor is little endian... swap bytes
+        for (int32_t i=0; i<3; i++)
+        {
+            rawData[i] = ((rawData[i] >> 8) & 0xFF) | (rawData[i] << 8);
+        }
 
-		data.XAxis = rawData[0] * kGsPerLSB;
-		data.YAxis = rawData[1] * kGsPerLSB;
-		data.ZAxis = rawData[2] * kGsPerLSB;
-	}
-	return data;
+        data.XAxis = rawData[0] * kGsPerLSB;
+        data.YAxis = rawData[1] * kGsPerLSB;
+        data.ZAxis = rawData[2] * kGsPerLSB;
+    }
+    return data;
 }
