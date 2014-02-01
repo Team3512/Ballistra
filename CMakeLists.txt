@@ -11,7 +11,9 @@ set(CMAKE_CXX_FLAGS "-O3 -Wall -s -std=c++11 -D__VXWORKS__")
 set(CMAKE_C_FLAGS "-O3 -Wall -s -std=c11 -D__VXWORKS__")
 
 set(DIRS
-  Logging/*
+    Logging/*
+    MotionProfile/*
+    Subsystems/*
 )
 
 file(GLOB SRC *.cpp *.c)

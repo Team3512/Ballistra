@@ -2,8 +2,6 @@
 #define _ROBOT_HPP
 
 #include <SimpleRobot.h>
-#include <Talon.h>
-#include <RobotDrive.h>
 #include <Joystick.h>
 #include <Solenoid.h>
 #include <Compressor.h>
@@ -15,7 +13,10 @@
 #include "RobotPosition.hpp"
 #include <DriverStationLCD.h>
 #include <math.h>
-#include <Encoder.h>
+
+#include "Subsystems/DriveTrain.hpp"
+#include "Subsystems/Claw.hpp"
+#include "ButtonTracker.hpp"
 
 #include "ADXL345_I2C_ALT.h"
 
@@ -38,28 +39,22 @@ class Robot : public SimpleRobot {
         bool testCompressor();
 
     private:
-        Talon *driveFR;
-        Talon *driveRR;
-        Talon *driveFL;
-        Talon *driveRL;
-        RobotDrive *robotDrive;
+        DriveTrain *robotDrive;
+        Claw *claw;
+
         Joystick *driveStick1;
         Joystick *driveStick2;
         Joystick *shootStick;
-        Victor *shooterFM;
-        Victor *shooterBM;
-        Solenoid *shooter1;
-        Solenoid *shooter2;
-        Solenoid *shooter3;
-        Solenoid *shooter4;
+
+        ButtonTracker drive1Buttons;
+        ButtonTracker drive2Buttons;
+        ButtonTracker shootButtons;
+
         Compressor *mainCompressor;
-        Timer *timer;
         Timer *timer2;
         Timer *timer42;
-        Encoder *encoder;
+        Timer *displayTimer;
         Counter  *counter;
-        Solenoid* shooterArm;
-        Solenoid *shifter;
         Logger *logger1;
         LogConsoleSink *consoleSink;
         LogFileSink *logFileSink;
