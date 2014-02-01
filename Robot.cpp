@@ -4,17 +4,20 @@ Robot::Robot() :
         drive1Buttons( 1 ),
         drive2Buttons( 2 ),
         shootButtons( 3 ) {
+    robotDrive = new DriveTrain();
+    claw = new Claw( 5 , 6 );
+
     driveStick1 = new Joystick (2);
     driveStick2 = new Joystick (1);
     shootStick = new Joystick (3);
+
     mainCompressor = new Compressor (1,1);
-    timer2 = new Timer ();
-    timer42 = new Timer ();
+    autonTimer = new Timer ();
     displayTimer = new Timer ();
+
     kinect = new KateKinect();
     robotPosition = new RobotPosition(1,2,3,4);
     accelerometer = new ADXL345_I2C_ALT (1);
-
 
     logger1 = new Logger ();
     ls = new LogStream(logger1);
@@ -25,55 +28,52 @@ Robot::Robot() :
     logFileSink->setVerbosityLevels(LogEvent::VERBOSE_ALL);
     logServerSink->setVerbosityLevels(LogEvent::VERBOSE_ALL);
     logServerSink->startServer (4097);
-
-    robotDrive = new DriveTrain();
-    claw = new Claw( 5 , 6 );
 }
 
 Robot::~Robot(){
+    delete robotDrive;
+    delete claw;
+
     delete driveStick1;
     delete driveStick2;
     delete shootStick;
+
     delete mainCompressor;
-    delete timer2;
-    delete timer42;
+
+    delete autonTimer;
     delete displayTimer;
-    delete counter;
+
     delete kinect;
+
     delete logger1;
     delete ls;
-    delete consoleSink;
     delete logFileSink;
     delete logServerSink;
-    delete robotDrive;
-    delete claw;
+
     delete accelerometer;
 }
 
 void Robot::Autonomous(){
-    /*int i = 0;
+#if 0
     mainCompressor->Start();
+    autonTimer->Start();
 
-    while(!timer2->HasPeriodPassed(3.0)){
-        robotDrive->ArcadeDrive(1,1,false);
-        timer2->Start();
+    while(!autonTimer->HasPeriodPassed(3.0)){
+        DS_PrintOut();
+
+        robotDrive->drive(1,1);
     }
-    robotDrive->ArcadeDrive(0,0,false);
-    shooterFM->Set(1);
-    shooterBM->Set(1);
-    while(shooterFM->Get() == true && i<3){
-        shooter->Set(1);
-        Wait(0.5);
-        shooter->Set(0);
-        Wait (0.5);
-        i++;
-    }*/
+
+    robotDrive->drive(0,0);
+#endif
 }
 
 void Robot::Disabled(){
     while (IsDisabled()){
-         logServerSink->acceptor(false);
-         Wait (1.0);
+        DS_PrintOut();
+
+        logServerSink->acceptor(false);
+        Wait (0.1);
     }
 }
 
@@ -98,20 +98,22 @@ bool Robot::testCompressor(){
 }
 
 bool Robot::testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound){
+    Timer timer;
+    timer.Start();
+
     // Converts direction (1 or 0) to 1 or -1 respectively
     int i = static_cast<int>(direction) * 2 - 1;
 
     robotDrive->setGear( shifterState );
 
-    while (!timer42->HasPeriodPassed(3.0)){
+    while (!timer.HasPeriodPassed(3.0)){
         robotDrive->drive( i , 0 );
         Wait (0.1);
         if ( !(lowerBound < robotDrive->getLeftRate() && robotDrive->getLeftRate() < upperBound) ) {
             return false;
         }
-
-
     }
+
     return true;
 }
 
@@ -120,22 +122,7 @@ void Robot::OperatorControl() {
     robotPosition->zeroValues();
 
     while (IsOperatorControl() && IsEnabled()){
-
-        if(displayTimer->HasPeriodPassed(0.05)){
-            //(*ls) << SetLogLevel(LogEvent::VERBOSE_INFO) << kinect->GetArmScale().second << std::flush;
-            //logServerSink->acceptor(false);
-
-            DriverStationLCD *userMessages = DriverStationLCD::GetInstance();
-            userMessages->Clear();
-
-            userMessages->Printf(DriverStationLCD::kUser_Line1, 1,"accelerometer %f ",accelerometer->GetAcceleration(ADXL345_I2C_ALT::kAxis_X));
-
-            /*userMessages->Printf(DriverStationLCD::kUser_Line2, 1,"Encoder2: %f",robotPosition->GetLeftEncoder());
-             userMessages->Printf(DriverStationLCD::kUser_Line3, 1," x: %f", robotPosition->GetX() );
-             userMessages->Printf(DriverStationLCD::kUser_Line4, 1," y: %f", robotPosition->GetY() );*/
-
-            userMessages->UpdateLCD();
-        }
+        DS_PrintOut();
 
         //Kinect Drive
         //robotDrive->setLeftManual( kinect->GetArmScale().second );
@@ -160,6 +147,23 @@ void Robot::OperatorControl() {
     }
 }
 
+void Robot::DS_PrintOut() {
+    if(displayTimer->HasPeriodPassed(0.05)){
+        //(*ls) << SetLogLevel(LogEvent::VERBOSE_INFO) << kinect->GetArmScale().second << std::flush;
+        //logServerSink->acceptor(false);
+
+        DriverStationLCD *userMessages = DriverStationLCD::GetInstance();
+        userMessages->Clear();
+
+        userMessages->Printf(DriverStationLCD::kUser_Line1, 1,"accelerometer %f ",accelerometer->GetAcceleration(ADXL345_I2C_ALT::kAxis_X));
+
+        /*userMessages->Printf(DriverStationLCD::kUser_Line2, 1,"Encoder2: %f",robotPosition->GetLeftEncoder());
+         userMessages->Printf(DriverStationLCD::kUser_Line3, 1," x: %f", robotPosition->GetX() );
+         userMessages->Printf(DriverStationLCD::kUser_Line4, 1," y: %f", robotPosition->GetY() );*/
+
+        userMessages->UpdateLCD();
+    }
+}
 
 START_ROBOT_CLASS(Robot);
 

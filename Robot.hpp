@@ -6,18 +6,14 @@
 #include <Solenoid.h>
 #include <Compressor.h>
 #include <Timer.h>
-#include <Victor.h>
-#include <Counter.h>
-#include <sstream>
-#include "KateKinect.hpp"
-#include "RobotPosition.hpp"
 #include <DriverStationLCD.h>
-#include <math.h>
 
 #include "Subsystems/DriveTrain.hpp"
 #include "Subsystems/Claw.hpp"
 #include "ButtonTracker.hpp"
 
+#include "KateKinect.hpp"
+#include "RobotPosition.hpp"
 #include "ADXL345_I2C_ALT.h"
 
 #include "Logging/Logger.h"
@@ -38,6 +34,8 @@ class Robot : public SimpleRobot {
         bool testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound);
         bool testCompressor();
 
+        void DS_PrintOut();
+
     private:
         DriveTrain *robotDrive;
         Claw *claw;
@@ -51,18 +49,18 @@ class Robot : public SimpleRobot {
         ButtonTracker shootButtons;
 
         Compressor *mainCompressor;
-        Timer *timer2;
-        Timer *timer42;
+
+        Timer *autonTimer;
         Timer *displayTimer;
-        Counter  *counter;
-        Logger *logger1;
-        LogConsoleSink *consoleSink;
-        LogFileSink *logFileSink;
-        LogServerSink *logServerSink;
-        LogStream *ls;
+
         KateKinect *kinect;
         RobotPosition *robotPosition;
         ADXL345_I2C_ALT *accelerometer;
+
+        Logger *logger1;
+        LogFileSink *logFileSink;
+        LogServerSink *logServerSink;
+        LogStream *ls;
 };
 
 #endif
