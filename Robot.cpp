@@ -15,7 +15,7 @@ Robot::Robot() :
     autonTimer = new Timer ();
     displayTimer = new Timer ();
 
-    kinect = new KateKinect();
+    kinect = new RobotKinect();
     robotPosition = new RobotPosition(1,2,3,4);
     accelerometer = new ADXL345_I2C_ALT (1);
 

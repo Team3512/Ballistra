@@ -1,12 +1,11 @@
-#include "KateKinect.hpp"
+#include "RobotKinect.hpp"
 
-KateKinect::KateKinect(){
+RobotKinect::RobotKinect(){
     kinect = Kinect::GetInstance();
     s = new Skeleton();
-
 }
 
-std::pair <float,float> KateKinect::GetArmScale(){
+std::pair<float,float> RobotKinect::GetArmScale(){
     float RightScale;
     float LeftScale;
     //float Rightx;
@@ -52,6 +51,4 @@ std::pair <float,float> KateKinect::GetArmScale(){
      p.first = RightScale;
      p.second = LeftScale;
      return p;
-
-
 }

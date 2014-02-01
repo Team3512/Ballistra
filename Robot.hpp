@@ -12,7 +12,7 @@
 #include "Subsystems/Claw.hpp"
 #include "ButtonTracker.hpp"
 
-#include "KateKinect.hpp"
+#include "RobotKinect.hpp"
 #include "RobotPosition.hpp"
 #include "ADXL345_I2C_ALT.h"
 
@@ -24,44 +24,43 @@
 #include "Logging/SetLogLevel.h"
 
 class Robot : public SimpleRobot {
-    public:
-        Robot();
-        virtual ~Robot();
-        void OperatorControl();
-        void Autonomous ();
-        void Disabled ();
-        void Test ();
-        bool testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound);
-        bool testCompressor();
+public:
+    Robot();
+    virtual ~Robot();
+    void OperatorControl();
+    void Autonomous ();
+    void Disabled ();
+    void Test ();
+    bool testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound);
+    bool testCompressor();
 
-        void DS_PrintOut();
+    void DS_PrintOut();
 
-    private:
-        DriveTrain *robotDrive;
-        Claw *claw;
+private:
+    DriveTrain *robotDrive;
+    Claw *claw;
 
-        Joystick *driveStick1;
-        Joystick *driveStick2;
-        Joystick *shootStick;
+    Joystick *driveStick1;
+    Joystick *driveStick2;
+    Joystick *shootStick;
 
-        ButtonTracker drive1Buttons;
-        ButtonTracker drive2Buttons;
-        ButtonTracker shootButtons;
+    ButtonTracker drive1Buttons;
+    ButtonTracker drive2Buttons;
+    ButtonTracker shootButtons;
 
-        Compressor *mainCompressor;
+    Compressor *mainCompressor;
 
-        Timer *autonTimer;
-        Timer *displayTimer;
+    Timer *autonTimer;
+    Timer *displayTimer;
 
-        KateKinect *kinect;
-        RobotPosition *robotPosition;
-        ADXL345_I2C_ALT *accelerometer;
+    RobotKinect *kinect;
+    RobotPosition *robotPosition;
+    ADXL345_I2C_ALT *accelerometer;
 
-        Logger *logger1;
-        LogFileSink *logFileSink;
-        LogServerSink *logServerSink;
-        LogStream *ls;
+    Logger *logger1;
+    LogFileSink *logFileSink;
+    LogServerSink *logServerSink;
+    LogStream *ls;
 };
 
-#endif
-
+#endif // _ROBOT_HPP
