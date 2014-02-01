@@ -1,4 +1,4 @@
-#include "Claw.h"
+#include "Claw.hpp"
 
 Claw::Claw(float clawAnglePort,float clawShooterWheelPort){
     shooterWheel = new Talon (clawShooterWheelPort);
