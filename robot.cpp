@@ -1,25 +1,30 @@
 #include "robot.hpp"
 
 robot::robot() {
-	driveFR = new Talon (7);
-	driveRR = new Talon (1);
-	driveFL = new Talon (3);
-	driveRL = new Talon (5);
+	driveFL = new Talon (1);
+	driveRL = new Talon (2);
+	driveFR = new Talon (3);
+	driveRR = new Talon (4);
+
 	driveStick1 = new Joystick (2);
 	driveStick2 = new Joystick (1);
 	shootStick = new Joystick (3);
 	shooterFM = new Victor (5);
 	shooterBM = new Victor (6);
-	shooter = new Solenoid (2);
+	shooter1 = new Solenoid (100);
+	shooter2 = new Solenoid (100);
+	shooter3 = new Solenoid (100);
+	shooter4 = new Solenoid (100);
 	mainCompressor = new Compressor (1,1);
 	timer = new Timer ();
 	timer2 = new Timer ();
 	timer42 = new Timer ();
 	encoder = new Encoder(8,7);
-	shooterHeight = new Solenoid (3);
+	shooterArm = new Solenoid (3);
 	shifter = new Solenoid (7);
 	kinect = new KateKinect();
-	robotPosition = new RobotPosition(10,9,8,7);
+	robotPosition = new RobotPosition(1,2,3,4);
+	accelerometer = new ADXL345_I2C_ALT (1);
 
 
 	logger1 = new Logger ();
@@ -32,24 +37,23 @@ robot::robot() {
 	logServerSink->setVerbosityLevels(LogEvent::VERBOSE_ALL);
 	logServerSink->startServer (4097);
 
-	robotDrive = new RobotDrive (driveFR, driveRR, driveFL, driveRL);
+	robotDrive = new RobotDrive (driveFL, driveRL, driveFR, driveRR);
 }
 robot::~robot(){
 	delete driveFR;
 	delete driveRR;
 	delete driveFL;
 	delete driveRL;
-	delete driveStick1;
+	delete   driveStick1;
 	delete driveStick2;
 	delete shootStick;
 	delete shooterFM;
 	delete shooterBM;
-	delete shooter;
 	delete mainCompressor;
 	delete timer;
 	delete timer2;
 	delete timer42;
-	delete shooterHeight;
+	delete shooterArm;
 	delete shifter;
 	delete counter;
 	delete kinect;
@@ -59,9 +63,11 @@ robot::~robot(){
 	delete logFileSink;
 	delete logServerSink;
 	delete robotDrive;
+	delete accelerometer;
 }
+
 void robot::Autonomous(){
-	int i = 0;
+	/*int i = 0;
 	mainCompressor->Start();
 
 	while(!timer2->HasPeriodPassed(3.0)){
@@ -77,7 +83,7 @@ void robot::Autonomous(){
 		shooter->Set(0);
 		Wait (0.5);
 		i++;
-	}
+	}*/
 
 
 }
@@ -98,13 +104,28 @@ void robot::Test(){
 	testDriveTrain(true,false, -1, 1);
 	testDriveTrain(false, true, -1, 1);
 	testDriveTrain(false, false, -1, 1);
+	testCompressor();
 	robotDrive->ArcadeDrive(0,0,false);
 }
+bool robot::testCompressor(){
+	Timer *timer;
+	timer = new Timer();
+	timer->Start();
+	if (mainCompressor->GetPressureSwitchValue() == 0 && timer->Get()<10.0){
+		return false;
+	}
+	else{
+		return true;
+	}
+
+}
+
 bool robot::testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound){
 	timer42->Start();
 	timer42->Reset();
 	int i;
 	i = 0;
+
 
 	if (shifterState == true){
 		shifter->Set(true);
@@ -132,7 +153,7 @@ bool robot::testDriveTrain(bool shifterState, bool direction, float lowerBound,f
 }
 
 void robot::OperatorControl() {
-	bool b5CurrentlyPressed = false;
+	//bool b5CurrentlyPressed = false;
 	bool b3CurrentlyPressed = false;
 	bool b2CurrentlyPressed = true;
 	bool triggerLastPressed = false;
@@ -146,72 +167,84 @@ void robot::OperatorControl() {
 	//ss = new std::stringstream();
 	robotPosition->zeroValues();
 
-
 	while (IsOperatorControl() && IsEnabled()){
-	 if(timer3->HasPeriodPassed(0.05)){
+
+		if(timer3->HasPeriodPassed(0.05)){
 		 //(*ls) << SetLogLevel(LogEvent::VERBOSE_INFO) << kinect->GetArmScale().second << std::flush;
 		 //logServerSink->acceptor(false);
+
 		 DriverStationLCD *userMessages = DriverStationLCD::GetInstance();
 		 userMessages->Clear();
-		 userMessages->Printf(DriverStationLCD::kUser_Line1, 1,"Right Distance : %f",robotPosition->GetEncoder()*(1.0/360)*(2*3.14*3.0));
-		 userMessages->Printf(DriverStationLCD::kUser_Line2, 1,"Left Distance: %f",robotPosition->GetLeftEncoder()* (1.0/250)*(2*3.14*3.0));
+
+		 userMessages->Printf(DriverStationLCD::kUser_Line1, 1,"accelerometer %f ",accelerometer->GetAcceleration(ADXL345_I2C_ALT::kAxis_X));
+
+		 /*userMessages->Printf(DriverStationLCD::kUser_Line2, 1,"Encoder2: %f",robotPosition->GetLeftEncoder());
 		 userMessages->Printf(DriverStationLCD::kUser_Line3, 1," x: %f", robotPosition->GetX() );
-		 userMessages->Printf(DriverStationLCD::kUser_Line4, 1," y: %f", robotPosition->GetY() );
+		 userMessages->Printf(DriverStationLCD::kUser_Line4, 1," y: %f", robotPosition->GetY() );*/
+
 		 userMessages->UpdateLCD();
-	 }
+		}
 
-	 //Kinect Drive
-	 //robotDrive->TankDrive(kinect->GetArmScale().second,kinect->GetArmScale().first);
+		//Kinect Drive
+		//robotDrive->TankDrive(kinect->GetArmScale().second,kinect->GetArmScale().first);
 
-	//arcade Drive
-	robotDrive->ArcadeDrive(driveStick1->GetY(),driveStick2->GetX(), false);
+		//arcade Drive
+		robotDrive->ArcadeDrive(driveStick1->GetY(),driveStick2->GetX(), false);
 
-	//Set Shifter
-	triggerCurrentlyPressed = driveStick1->GetRawButton(1);
+		//Set Shifter
+		triggerCurrentlyPressed = driveStick1->GetRawButton(1);
 
-	if (triggerCurrentlyPressed == false && triggerLastPressed == true){
-		shifter->Set(!shifter->Get());
-	}
-	triggerLastPressed = triggerCurrentlyPressed;
+		if (triggerCurrentlyPressed == false && triggerLastPressed == true){
+			shifter->Set(!shifter->Get());
+		}
+		triggerLastPressed = triggerCurrentlyPressed;
 
-	//Shoots Frisbee
-	if (shootStick->GetRawButton(1)){
-		shooter->Set(true);
-		timer->Start();
-	}
+		//Shoots Ball
+		if (shootStick->GetRawButton(1)){
+			shooter1->Set(true);
+			shooter2->Set(true);
+			shooter3->Set(true);
+			shooter4->Set(true);
 
-	if (timer->HasPeriodPassed(0.5)){
-		shooter->Set(false);
-		timer->Stop();
-	}
-	//Sets Shooter Angle
-	if (shootStick->GetRawButton(3)){
-		b3CurrentlyPressed = true;
-		b2CurrentlyPressed = false;
-	}
-	if (b3CurrentlyPressed == true){
-		shooterHeight->Set(true);
-	}
-	if (shootStick->GetRawButton(2)){
-		b2CurrentlyPressed = true;
-	}
-	if (b2CurrentlyPressed == true){
-		shooterHeight->Set(false);
-	}
-	//Sets Shooter Wheels
-	if ( shootStick->GetRawButton(5) ){
-		b5CurrentlyPressed = true;
-	}
-	if (b5CurrentlyPressed == true){
-		shooterFM->Set(driveStick2->GetZ());
-		shooterBM->Set(driveStick2->GetZ());
-	}
-	if ( shootStick->GetRawButton (4)){
-		b5CurrentlyPressed = false;
-		shooterFM->Set(0);
-		shooterBM->Set(0);
-	}
-	}
+			timer->Start();
+		}
 
+		if (timer->HasPeriodPassed(0.5)){
+			shooter1->Set(false);
+			shooter2->Set(false);
+			shooter3->Set(false);
+			shooter4->Set(false);
+			timer->Stop();
+		}
+		//Sets Shooter Arm
+		if (shootStick->GetRawButton(3)){
+			b3CurrentlyPressed = true;
+			b2CurrentlyPressed = false;
+		}
+		if (b3CurrentlyPressed == true){
+			//shooterHeight->Set(true);
+		}
+		if (shootStick->GetRawButton(2)){
+			b2CurrentlyPressed = true;
+		}
+		if (b2CurrentlyPressed == true){
+			//shooterHeight->Set(false);
+		}
+		/*Sets Shooter Wheels
+		if ( shootStick->GetRawButton(5) ){
+			b5CurrentlyPressed = true;
+		}
+		if (b5CurrentlyPressed == true){
+			shooterFM->Set(driveStick2->GetZ());
+			shooterBM->Set(driveStick2->GetZ());
+		}
+		if ( shootStick->GetRawButton (4)){
+			b5CurrentlyPressed = false;
+			shooterFM->Set(0);
+			shooterBM->Set(0);
+		}*/
+	}
 }
+
+
 START_ROBOT_CLASS(robot);
