@@ -26,17 +26,16 @@
 #include "Logging/LogStream.h"
 #include "Logging/SetLogLevel.h"
 
-class robot : public SimpleRobot {
+class Robot : public SimpleRobot {
     public:
-        robot();
-        ~robot();
+        Robot();
+        virtual ~Robot();
         void OperatorControl();
         void Autonomous ();
         void Disabled ();
         void Test ();
         bool testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound);
         bool testCompressor();
-
 
     private:
         Talon *driveFR;
@@ -69,6 +68,7 @@ class robot : public SimpleRobot {
         KateKinect *kinect;
         RobotPosition *robotPosition;
         ADXL345_I2C_ALT *accelerometer;
+};
 
-        };
 #endif
+

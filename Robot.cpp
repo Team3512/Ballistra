@@ -1,6 +1,6 @@
-#include "robot.hpp"
+#include "Robot.hpp"
 
-robot::robot() {
+Robot::Robot() {
     driveFL = new Talon (1);
     driveRL = new Talon (2);
     driveFR = new Talon (3);
@@ -39,7 +39,8 @@ robot::robot() {
 
     robotDrive = new RobotDrive (driveFL, driveRL, driveFR, driveRR);
 }
-robot::~robot(){
+
+Robot::~Robot(){
     delete driveFR;
     delete driveRR;
     delete driveFL;
@@ -66,7 +67,7 @@ robot::~robot(){
     delete accelerometer;
 }
 
-void robot::Autonomous(){
+void Robot::Autonomous(){
     /*int i = 0;
     mainCompressor->Start();
 
@@ -84,17 +85,16 @@ void robot::Autonomous(){
         Wait (0.5);
         i++;
     }*/
-
-
 }
-void robot::Disabled(){
+
+void Robot::Disabled(){
     while (IsDisabled()){
          logServerSink->acceptor(false);
          Wait (1.0);
     }
 }
 
-void robot::Test(){
+void Robot::Test(){
     mainCompressor->Start();
     encoder->Start();
     encoder->SetDistancePerPulse(60.0/360);
@@ -107,7 +107,8 @@ void robot::Test(){
     testCompressor();
     robotDrive->ArcadeDrive(0,0,false);
 }
-bool robot::testCompressor(){
+
+bool Robot::testCompressor(){
     Timer *timer;
     timer = new Timer();
     timer->Start();
@@ -117,10 +118,9 @@ bool robot::testCompressor(){
     else{
         return true;
     }
-
 }
 
-bool robot::testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound){
+bool Robot::testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound){
     timer42->Start();
     timer42->Reset();
     int i;
@@ -149,10 +149,9 @@ bool robot::testDriveTrain(bool shifterState, bool direction, float lowerBound,f
 
     }
     return true;
-
 }
 
-void robot::OperatorControl() {
+void Robot::OperatorControl() {
     //bool b5CurrentlyPressed = false;
     bool b3CurrentlyPressed = false;
     bool b2CurrentlyPressed = true;
@@ -247,4 +246,5 @@ void robot::OperatorControl() {
 }
 
 
-START_ROBOT_CLASS(robot);
+START_ROBOT_CLASS(Robot);
+
