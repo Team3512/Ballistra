@@ -1,11 +1,13 @@
 #include "Claw.hpp"
 
-Claw::Claw(float clawAnglePort,float clawShooterWheelPort) :
-        m_shooterWheel( clawShooterWheelPort ),
-        m_shooterBase( clawAnglePort ),
-        m_wheelEncoder( 3 , 2 ),
-        m_shooterEncoder( 2 , 3 ),
+#include <Solenoid.h>
+
+Claw::Claw(float clawRotatePort,float clawWheelPort) :
+        m_settings( "RobotSettings.txt" ),
         m_isShooting( false ) {
+    m_clawRotator = new GearBox<Talon>( 0 , 3 , 2 , clawRotatePort );
+    m_intakeWheel = new GearBox<Talon>( 0 , 0 , 0 , clawWheelPort );
+
     m_ballShooter.push_back( new Solenoid( 1 ) );
     m_ballShooter.push_back( new Solenoid( 2 ) );
     m_ballShooter.push_back( new Solenoid( 3 ) );
@@ -21,21 +23,44 @@ Claw::~Claw(){
 }
 
 void Claw::SetAngle(float shooterAngle){
-    m_shooterEncoder.Start();
-
-    if (shooterAngle < m_shooterEncoder.Get()){
-        m_shooterBase.Set(0.5);
-    }
-    else if (shooterAngle > m_shooterEncoder.Get()){
-        m_shooterBase.Set(-0.5);
-    }
-    else {
-        m_shooterBase.Set(0.0);
-    }
+    m_clawRotator->setSetpoint( shooterAngle );
 }
 
-void Claw::SetWheel(float wheelSpeed) {
+double Claw::GetTargetAngle() const {
+    return m_clawRotator->getSetpoint();
+}
 
+void Claw::SetWheelSetpoint( float speed ) {
+    m_intakeWheel->setSetpoint( speed );
+}
+
+void Claw::SetWheelManual( float speed ) {
+    m_intakeWheel->setManual( speed );
+}
+
+void Claw::ResetEncoders() {
+    m_clawRotator->resetEncoder();
+    m_intakeWheel->resetEncoder();
+}
+
+void Claw::ReloadPID() {
+    m_settings.update();
+
+    float p = 0.f;
+    float i = 0.f;
+    float d = 0.f;
+
+    // Set shooter rotator PID
+    p = atof( m_settings.getValueFor( "PID_ARM_ROTATE_P" ).c_str() );
+    i = atof( m_settings.getValueFor( "PID_ARM_ROTATE_I" ).c_str() );
+    d = atof( m_settings.getValueFor( "PID_ARM_ROTATE_D" ).c_str() );
+    m_clawRotator->setPID( p , i , d );
+
+    // Set shooter intake wheel PID
+    p = atof( m_settings.getValueFor( "PID_ARM_WHEEL_P" ).c_str() );
+    i = atof( m_settings.getValueFor( "PID_ARM_WHEEL_I" ).c_str() );
+    d = atof( m_settings.getValueFor( "PID_ARM_WHEEL_D" ).c_str() );
+    m_intakeWheel->setPID( p , i , d );
 }
 
 void Claw::Shoot() {

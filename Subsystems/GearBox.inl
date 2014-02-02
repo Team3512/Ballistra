@@ -17,8 +17,18 @@ template <class T>
 GearBox<T>::GearBox( unsigned int shifterChan , unsigned int encA ,
         unsigned int encB , unsigned int motor1 , unsigned int motor2 ,
         unsigned int motor3 ) {
-    m_encoder = new Encoder( encA , encB );
-    m_pid = new PIDController( 0 , 0 , 0 , 0 , m_encoder , this );
+    if ( encA != 0 && encB != 0 ) {
+        m_encoder = new Encoder( encA , encB );
+        m_pid = new PIDController( 0 , 0 , 0 , 0 , m_encoder , this );
+
+        m_havePID = true;
+    }
+    else {
+        m_encoder = NULL;
+        m_pid = NULL;
+
+        m_havePID = false;
+    }
 
     if ( shifterChan != 0 ) {
         m_shifter = new Solenoid( shifterChan );
@@ -40,22 +50,26 @@ GearBox<T>::GearBox( unsigned int shifterChan , unsigned int encA ,
         m_motors.push_back( new T( motor3 ) );
     }
 
-    // c = PI * 10.16cm [wheel diameter]
-    // dPerP = c / pulses
-    m_encoder->SetDistancePerPulse( 3.14159265 * 10.16 / 360.0 );
+    if ( m_havePID ) {
+        // c = PI * 10.16cm [wheel diameter]
+        // dPerP = c / pulses
+        m_encoder->SetDistancePerPulse( 3.14159265 * 10.16 / 360.0 );
 
-    m_encoder->SetPIDSourceParameter( Encoder::kDistance );
+        m_encoder->SetPIDSourceParameter( Encoder::kDistance );
 
-    m_encoder->Start();
-    m_pid->Enable();
+        m_encoder->Start();
+        m_pid->Enable();
+    }
 }
 
 template <class T>
 GearBox<T>::~GearBox() {
-    delete m_pid;
+    if ( m_havePID ) {
+        delete m_pid;
 
-    m_encoder->Stop();
-    delete m_encoder;
+        m_encoder->Stop();
+        delete m_encoder;
+    }
 
     if ( m_shifter != NULL ) {
         delete m_shifter;
@@ -70,22 +84,29 @@ GearBox<T>::~GearBox() {
 
 template <class T>
 void GearBox<T>::setSetpoint( float setpoint ) {
-    if ( !m_pid->IsEnabled() ) {
+    if ( !m_pid->IsEnabled() && m_havePID ) {
         m_pid->Enable();
-    }
 
-    m_pid->SetSetpoint( setpoint );
+        m_pid->SetSetpoint( setpoint );
+    }
 }
 
 template <class T>
 float GearBox<T>::getSetpoint() const {
-    return m_pid->GetSetpoint();
+    if ( m_havePID ) {
+        return m_pid->GetSetpoint();
+    }
+    else {
+        return 0.f;
+    }
 }
 
 template <class T>
 void GearBox<T>::setManual( float value ) {
-    if ( m_pid->IsEnabled() ) {
-        m_pid->Disable();
+    if ( m_havePID ) {
+        if ( m_pid->IsEnabled() ) {
+            m_pid->Disable();
+        }
     }
 
     PIDWrite( value );
@@ -93,27 +114,43 @@ void GearBox<T>::setManual( float value ) {
 
 template <class T>
 void GearBox<T>::setPID( float p , float i , float d ) {
-    m_pid->SetPID( p , i , d );
+    if ( m_havePID ) {
+        m_pid->SetPID( p , i , d );
+    }
 }
 
 template <class T>
 void GearBox<T>::setF( float f ) {
-    m_pid->SetPID( m_pid->GetP() , m_pid->GetI() , m_pid->GetD() , f );
+    if ( m_havePID ) {
+        m_pid->SetPID( m_pid->GetP() , m_pid->GetI() , m_pid->GetD() , f );
+    }
 }
 
 template <class T>
 void GearBox<T>::resetEncoder() {
-    m_encoder->Reset();
+    if ( m_havePID ) {
+        m_encoder->Reset();
+    }
 }
 
 template <class T>
 double GearBox<T>::getDistance() const {
-    return m_encoder->GetDistance();
+    if ( m_havePID ) {
+        return m_encoder->GetDistance();
+    }
+    else {
+        return 0.f;
+    }
 }
 
 template <class T>
 double GearBox<T>::getRate() const {
-    return m_encoder->GetRate();
+    if ( m_havePID ) {
+        return m_encoder->GetRate();
+    }
+    else {
+        return 0.f;
+    }
 }
 
 template <class T>
@@ -129,12 +166,18 @@ bool GearBox<T>::isReversed() const {
 template <class T>
 void GearBox<T>::setGear( bool gear ) {
     if ( m_shifter != NULL ) {
-        /* If no manual override and going fast enough, shift since shifter
-         * won't get stuck in neutral. The PID controller being disabled counts
-         * as a manual override.
-         * TODO find ideal minimum speed for shifting
-         */
-        if ( (m_pid->IsEnabled() && m_encoder->GetRate() > 4) || !m_pid->IsEnabled() ) {
+        if ( m_havePID ) {
+            /* If no manual override and going fast enough, shift since shifter
+             * won't get stuck in neutral. The PID controller being disabled counts
+             * as a manual override.
+             * TODO find ideal minimum speed for shifting
+             */
+            if ( (m_pid->IsEnabled() && m_encoder->GetRate() > 4) || !m_pid->IsEnabled() ) {
+                m_shifter->Set( gear );
+            }
+        }
+        else {
+            // No encoder, so change gear anyway
             m_shifter->Set( gear );
         }
     }

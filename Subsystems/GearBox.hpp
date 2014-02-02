@@ -77,6 +77,7 @@ private:
     Solenoid* m_shifter;
 
     bool m_isReversed;
+    bool m_havePID;
 
     std::vector<SpeedController*> m_motors;
 };

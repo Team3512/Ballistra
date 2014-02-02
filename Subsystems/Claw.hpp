@@ -5,16 +5,35 @@
 
 #include <Encoder.h>
 #include <Talon.h>
-#include <Solenoid.h>
 #include <Timer.h>
+
+#include "../Settings.hpp"
+#include "GearBox.hpp"
+
+class Solenoid;
 
 class Claw {
 public:
-    Claw (float clawAnglePort,float clawShooterWheelPort);
+    Claw (float clawRotatePort,float clawWheelPort);
     ~Claw();
 
-    void SetAngle(float shooterAngle);
-    void SetWheel(float wheelSpeed);
+    // Set angle of claw
+    void SetAngle( float shooterAngle );
+
+    // Returns setpoint of rotator's internal PID loop
+    double GetTargetAngle() const;
+
+    // Sets speed of claw's intake wheel
+    void SetWheelSetpoint( float speed );
+    void SetWheelManual( float speed );
+
+    double GetWheelSetpoint() const;
+
+    // Set encoder distances to 0
+    void ResetEncoders();
+
+    // Reload PID constants
+    void ReloadPID();
 
     // Starts activating solenoids to shoot ball
     void Shoot();
@@ -26,10 +45,10 @@ public:
     bool IsShooting() const;
 
 private:
-    Talon m_shooterWheel;
-    Talon m_shooterBase;
-    Encoder m_wheelEncoder;
-    Encoder m_shooterEncoder;
+    Settings m_settings;
+
+    GearBox<Talon>* m_clawRotator;
+    GearBox<Talon>* m_intakeWheel;
 
     Timer m_shootTimer;
     bool m_isShooting;
