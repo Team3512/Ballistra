@@ -11,10 +11,13 @@
 #include "Subsystems/DriveTrain.hpp"
 #include "Subsystems/Claw.hpp"
 #include "ButtonTracker.hpp"
+#include "Settings.hpp"
 
 #include "RobotKinect.hpp"
 #include "RobotPosition.hpp"
 #include "ADXL345_I2C_ALT.h"
+
+#include "DriverStationDisplay.hpp"
 
 #include "Logging/Logger.h"
 #include "Logging/LogConsoleSink.h"
@@ -34,9 +37,13 @@ public:
     bool testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound);
     bool testCompressor();
 
+    void AutonMotionProfile();
+
     void DS_PrintOut();
 
 private:
+    Settings settings;
+
     DriveTrain *robotDrive;
     Claw *claw;
 
@@ -56,6 +63,9 @@ private:
     RobotKinect *kinect;
     RobotPosition *robotPosition;
     ADXL345_I2C_ALT *accelerometer;
+
+    // Used for sending data to the Driver Station
+    DriverStationDisplay<Robot>* driverStation;
 
     Logger *logger1;
     LogFileSink *logFileSink;

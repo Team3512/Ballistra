@@ -13,7 +13,7 @@ LogEvent::LogEvent(std::string data, VerbosityLevel level)
 {
     m_level = level;
     m_timestamp = time(NULL);
-    m_data = data;
+    m_dataBuf = data;
     m_initialTime = 0;
 }
 
@@ -22,7 +22,7 @@ LogEvent::LogEvent(std::string data, VerbosityLevel level,
 {
     m_level = level;
     m_timestamp = timestamp;
-    m_data = data;
+    m_dataBuf = data;
     m_initialTime = 0;
 
 }
@@ -52,7 +52,7 @@ time_t LogEvent::getRelativeTimestamp()
 
 std::string LogEvent::getData()
 {
-    return m_data;
+    return m_dataBuf;
 }
 
 std::string LogEvent::toFormattedString()

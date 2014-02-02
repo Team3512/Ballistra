@@ -1,14 +1,16 @@
 #include "Robot.hpp"
+#include <cmath>
 
 Robot::Robot() :
+        settings( "RobotSettings.txt" ),
         drive1Buttons( 1 ),
         drive2Buttons( 2 ),
         shootButtons( 3 ) {
     robotDrive = new DriveTrain();
     claw = new Claw( 5 , 6 );
 
-    driveStick1 = new Joystick (2);
-    driveStick2 = new Joystick (1);
+    driveStick1 = new Joystick (1);
+    driveStick2 = new Joystick (2);
     shootStick = new Joystick (3);
 
     mainCompressor = new Compressor (1,1);
@@ -18,6 +20,10 @@ Robot::Robot() :
     kinect = new RobotKinect();
     robotPosition = new RobotPosition(1,2,3,4);
     accelerometer = new ADXL345_I2C_ALT (1);
+
+    driverStation = DriverStationDisplay<Robot>::getInstance( atoi( settings.getValueFor( "DS_Port" ).c_str() ) );
+
+    driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
 
     logger1 = new Logger ();
     ls = new LogStream(logger1);
@@ -53,19 +59,43 @@ Robot::~Robot(){
     delete accelerometer;
 }
 
-void Robot::Autonomous(){
-#if 0
+void Robot::OperatorControl() {
     mainCompressor->Start();
-    autonTimer->Start();
+    robotPosition->zeroValues();
 
-    while(!autonTimer->HasPeriodPassed(3.0)){
+    while (IsOperatorControl() && IsEnabled()){
         DS_PrintOut();
 
-        robotDrive->drive(1,1);
-    }
+        //Kinect Drive
+        //robotDrive->setLeftManual( kinect->GetArmScale().second );
+        //robotDrive->setRightManual( kinect->GetArmScale().first );
 
-    robotDrive->drive(0,0);
-#endif
+        //arcade Drive
+        robotDrive->drive( driveStick1->GetY() , driveStick2->GetX() );
+
+        if ( drive1Buttons.releasedButton( 1 ) ) {
+            robotDrive->setGear( !robotDrive->getGear() );
+        }
+
+        //Shoots Ball
+        if (shootStick->GetRawButton(1) && !claw->IsShooting()){
+            claw->Shoot();
+        }
+
+        claw->Update();
+
+        drive1Buttons.updateButtons();
+        drive2Buttons.updateButtons();
+    }
+}
+
+void Robot::Autonomous(){
+    autonTimer->Reset();
+    autonTimer->Start();
+
+    driverStation->execAutonomous();
+
+    autonTimer->Stop();
 }
 
 void Robot::Disabled(){
@@ -117,38 +147,8 @@ bool Robot::testDriveTrain(bool shifterState, bool direction, float lowerBound,f
     return true;
 }
 
-void Robot::OperatorControl() {
-    mainCompressor->Start();
-    robotPosition->zeroValues();
-
-    while (IsOperatorControl() && IsEnabled()){
-        DS_PrintOut();
-
-        //Kinect Drive
-        //robotDrive->setLeftManual( kinect->GetArmScale().second );
-        //robotDrive->setRightManual( kinect->GetArmScale().first );
-
-        //arcade Drive
-        robotDrive->drive( driveStick1->GetY() , driveStick2->GetX() );
-
-        if ( drive1Buttons.releasedButton( 1 ) ) {
-            robotDrive->setGear( !robotDrive->getGear() );
-        }
-
-        //Shoots Ball
-        if (shootStick->GetRawButton(1) && !claw->IsShooting()){
-            claw->Shoot();
-        }
-
-        claw->Update();
-
-        drive1Buttons.updateButtons();
-        drive2Buttons.updateButtons();
-    }
-}
-
 void Robot::DS_PrintOut() {
-    if(displayTimer->HasPeriodPassed(0.05)){
+    if(displayTimer->HasPeriodPassed(0.1)){
         //(*ls) << SetLogLevel(LogEvent::VERBOSE_INFO) << kinect->GetArmScale().second << std::flush;
         //logServerSink->acceptor(false);
 
@@ -162,8 +162,18 @@ void Robot::DS_PrintOut() {
          userMessages->Printf(DriverStationLCD::kUser_Line4, 1," y: %f", robotPosition->GetY() );*/
 
         userMessages->UpdateLCD();
+
+        driverStation->clear();
+
+        DS::AddElementData( driverStation , "LEFT_RPM" , robotDrive->getLeftRate() );
+        DS::AddElementData( driverStation , "RIGHT_RPM" , robotDrive->getRightRate() );
+        DS::AddElementData( driverStation , "LEFT_DIST" , robotDrive->getLeftDist() );
+        DS::AddElementData( driverStation , "RIGHT_DIST" , robotDrive->getRightDist() );
+
+        driverStation->sendToDS();
     }
+
+    driverStation->receiveFromDS();
 }
 
 START_ROBOT_CLASS(Robot);
-

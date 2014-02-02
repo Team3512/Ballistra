@@ -157,7 +157,7 @@ public:
 private:
     VerbosityLevel m_level;
     time_t m_timestamp;
-    std::string m_data;
+    std::string m_dataBuf;
     time_t m_initialTime;
 };
 
