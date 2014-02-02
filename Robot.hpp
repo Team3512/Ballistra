@@ -18,6 +18,7 @@
 #include "ADXL345_I2C_ALT.h"
 
 #include "DriverStationDisplay.hpp"
+#include "LiveGrapherHost/GraphHost.hpp"
 
 #include "Logging/Logger.h"
 #include "Logging/LogConsoleSink.h"
@@ -66,6 +67,9 @@ private:
 
     // Used for sending data to the Driver Station
     DriverStationDisplay<Robot>* driverStation;
+
+    // The LiveGrapher host
+    GraphHost pidGraph;
 
     Logger *logger1;
     LogFileSink *logFileSink;

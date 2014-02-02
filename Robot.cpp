@@ -5,7 +5,8 @@ Robot::Robot() :
         settings( "RobotSettings.txt" ),
         drive1Buttons( 1 ),
         drive2Buttons( 2 ),
-        shootButtons( 3 ) {
+        shootButtons( 3 ),
+        pidGraph( 3513 ) {
     robotDrive = new DriveTrain();
     claw = new Claw( 5 , 6 );
 
@@ -24,6 +25,9 @@ Robot::Robot() :
     driverStation = DriverStationDisplay<Robot>::getInstance( atoi( settings.getValueFor( "DS_Port" ).c_str() ) );
 
     driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
+
+    pidGraph.resetTime();
+    pidGraph.setSendInterval( 20 );
 
     logger1 = new Logger ();
     ls = new LogStream(logger1);
@@ -148,6 +152,13 @@ bool Robot::testDriveTrain(bool shifterState, bool direction, float lowerBound,f
 }
 
 void Robot::DS_PrintOut() {
+    if ( pidGraph.hasIntervalPassed() ) {
+        pidGraph.graphData( robotDrive->getLeftDist() , "Left PID" );
+        pidGraph.graphData( robotDrive->getLeftSetpoint() , "Left Setpoint" );
+
+        pidGraph.resetInterval();
+    }
+
     if(displayTimer->HasPeriodPassed(0.1)){
         //(*ls) << SetLogLevel(LogEvent::VERBOSE_INFO) << kinect->GetArmScale().second << std::flush;
         //logServerSink->acceptor(false);

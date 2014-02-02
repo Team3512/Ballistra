@@ -12,6 +12,7 @@ set(CMAKE_C_FLAGS "-O3 -Wall -s -std=c11 -D__VXWORKS__")
 
 set(DIRS
     AutonomousModes/*
+    LiveGrapherHost/*
     Logging/*
     MotionProfile/*
     SFMLNetwork/*
