@@ -47,7 +47,7 @@ list_delete(struct list_t *list, struct list_elem_t *elem)
   }
 
   free(elem);
-  
+
   return;
 }
 

@@ -34,18 +34,18 @@ The *GraphHost\_graphData()* function sends the data point specified by the *x* 
 Communication Protocol
 ----------------------
 
-Clients should connect to the TCP port specified in the call to *graphHost\_create()* . Various requests can then be sent to the server. These requests may trigger the server to respond with zero or more responses. All communication with the server is asynchronous. A request may be sent at any time, even before a response has been received regarding a previous request. Therefore, the order in which responses are sent is unspecified.  
-  
-All requests consist of sixteen byte ASCII strings. The first byte describes the type of request. The remaining fifteen bytes describe the dataset name associated with the request (if appropriate).  
-  
+Clients should connect to the TCP port specified in the call to *graphHost\_create()* . Various requests can then be sent to the server. These requests may trigger the server to respond with zero or more responses. All communication with the server is asynchronous. A request may be sent at any time, even before a response has been received regarding a previous request. Therefore, the order in which responses are sent is unspecified.
+
+All requests consist of sixteen byte ASCII strings. The first byte describes the type of request. The remaining fifteen bytes describe the dataset name associated with the request (if appropriate).
+
 All responses consist of 24 bytes arranged in various configurations. The first byte describes the type of response.
 
 ### List Available Datasets ('l') ###
 
-This request triggers the server to respond with a list of datasets from which data can be requested.  
-  
-The 'l' character is sent to the server, followed by fifteen bytes of padding. One response is sent for each available dataset.  
-  
+This request triggers the server to respond with a list of datasets from which data can be requested.
+
+The 'l' character is sent to the server, followed by fifteen bytes of padding. One response is sent for each available dataset.
+
 The body of each response contains the following fields:
 * The ASCII character 'l', the type of response.
 * A fifteen byte string whose contents represent the name of a dataset in the list.
@@ -54,10 +54,10 @@ The body of each response contains the following fields:
 
 ### Begin Sending Data ('c') ###
 
-This request notifies the server that it may begin sending data points associated with the specified dataset.  
-  
-The 'c' character is sent to the server, followed by a fifteen byte string describing the dataset from which data is being requested. The server will then respond with a data point each time the *GraphHost\_graphData()* function is called with the specified dataset.  
-  
+This request notifies the server that it may begin sending data points associated with the specified dataset.
+
+The 'c' character is sent to the server, followed by a fifteen byte string describing the dataset from which data is being requested. The server will then respond with a data point each time the *GraphHost\_graphData()* function is called with the specified dataset.
+
 The body of each response contains the following fields:
 * The ASCII character 'd', the type of response.
 * The fifteen byte ASCII string describing the dataset to which the data point belongs.
@@ -66,7 +66,7 @@ The body of each response contains the following fields:
 
 ### Stop Sending Data ('d') ###
 
-This request notifies the server to stop sending data from the specified dataset.  
-  
+This request notifies the server to stop sending data from the specified dataset.
+
 The 'd' character is sent to the server, followed by a fifteen byte string describing the dataset from which to stop sending data.
 

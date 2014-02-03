@@ -17,7 +17,7 @@ for (( i=0 ; i < ${#FILESRC[@]} ; i++ ));
 do
     echo "cd ${PATHDEST[$i]}" >> /tmp/ftp.$$
     echo "put ${FILESRC[$i]} ${FILEDEST[$i]}" >> /tmp/ftp.$$
-done 
+done
 
 # script: logout of FTP server
 echo "quit" >> /tmp/ftp.$$

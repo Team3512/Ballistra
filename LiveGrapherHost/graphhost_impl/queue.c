@@ -5,15 +5,15 @@ struct queue_t *
 queue_init(int size)
 {
   struct queue_t *queue;
-  
+
   /* Create the queue description structure */
   queue = malloc(sizeof(struct queue_t ));
-  
+
   queue->list = list_create();
   queue->last = NULL;
   queue->size = size;
   queue->length = 0;
-  
+
   return queue;
 }
 

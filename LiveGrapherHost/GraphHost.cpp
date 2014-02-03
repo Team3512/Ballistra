@@ -11,7 +11,7 @@ GraphHost::GraphHost(int port) :
 }
 
 GraphHost::~GraphHost() {
-	GraphHost_destroy(m_inst);
+    GraphHost_destroy(m_inst);
 }
 
 int GraphHost::graphData(float value, std::string dataset) {
