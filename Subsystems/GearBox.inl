@@ -89,6 +89,9 @@ void GearBox<T>::setSetpoint( float setpoint ) {
 
         m_pid->SetSetpoint( setpoint );
     }
+    else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
+    }
 }
 
 template <class T>
@@ -97,6 +100,7 @@ float GearBox<T>::getSetpoint() const {
         return m_pid->GetSetpoint();
     }
     else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
         return 0.f;
     }
 }
@@ -117,6 +121,9 @@ void GearBox<T>::setPID( float p , float i , float d ) {
     if ( m_havePID ) {
         m_pid->SetPID( p , i , d );
     }
+    else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
+    }
 }
 
 template <class T>
@@ -124,12 +131,18 @@ void GearBox<T>::setF( float f ) {
     if ( m_havePID ) {
         m_pid->SetPID( m_pid->GetP() , m_pid->GetI() , m_pid->GetD() , f );
     }
+    else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
+    }
 }
 
 template <class T>
 void GearBox<T>::resetEncoder() {
     if ( m_havePID ) {
         m_encoder->Reset();
+    }
+    else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
     }
 }
 
@@ -139,6 +152,7 @@ double GearBox<T>::getDistance() const {
         return m_encoder->GetDistance();
     }
     else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
         return 0.f;
     }
 }
@@ -149,6 +163,7 @@ double GearBox<T>::getRate() const {
         return m_encoder->GetRate();
     }
     else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
         return 0.f;
     }
 }

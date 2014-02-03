@@ -55,12 +55,6 @@ void Claw::ReloadPID() {
     i = atof( m_settings.getValueFor( "PID_ARM_ROTATE_I" ).c_str() );
     d = atof( m_settings.getValueFor( "PID_ARM_ROTATE_D" ).c_str() );
     m_clawRotator->setPID( p , i , d );
-
-    // Set shooter intake wheel PID
-    p = atof( m_settings.getValueFor( "PID_ARM_WHEEL_P" ).c_str() );
-    i = atof( m_settings.getValueFor( "PID_ARM_WHEEL_I" ).c_str() );
-    d = atof( m_settings.getValueFor( "PID_ARM_WHEEL_D" ).c_str() );
-    m_intakeWheel->setPID( p , i , d );
 }
 
 void Claw::Shoot() {
