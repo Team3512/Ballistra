@@ -17,10 +17,10 @@ public:
     Claw (float clawRotatePort,float clawWheelPort);
     ~Claw();
 
-    // Set angle of claw
+    // Set angle of claw in degrees
     void SetAngle( float shooterAngle );
 
-    // Returns setpoint of rotator's internal PID loop
+    // Returns setpoint of rotator's internal PID loop in degrees
     double GetTargetAngle() const;
 
     // Sets speed of claw's intake wheel

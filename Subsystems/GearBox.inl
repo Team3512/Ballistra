@@ -51,10 +51,6 @@ GearBox<T>::GearBox( unsigned int shifterChan , unsigned int encA ,
     }
 
     if ( m_havePID ) {
-        // c = PI * 10.16cm [wheel diameter]
-        // dPerP = c / pulses
-        m_encoder->SetDistancePerPulse( 3.14159265 * 10.16 / 360.0 );
-
         m_encoder->SetPIDSourceParameter( Encoder::kDistance );
 
         m_encoder->Start();
@@ -133,6 +129,20 @@ void GearBox<T>::setF( float f ) {
     }
     else {
         // TODO emit warning since PID doesn't work (possibly through logger?)
+    }
+}
+
+template <class T>
+void GearBox<T>::setDistancePerPulse( double distancePerPulse ) {
+    if ( m_havePID ) {
+        m_encoder->SetDistancePerPulse( distancePerPulse );
+    }
+}
+
+template <class T>
+void GearBox<T>::setPIDSourceParameter( PIDSource::PIDSourceParameter pidSource ) {
+    if ( m_havePID ) {
+        m_encoder->SetPIDSourceParameter( pidSource );
     }
 }
 
