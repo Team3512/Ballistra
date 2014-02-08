@@ -27,7 +27,7 @@
 #include <cstring>
 
 uint64_t htonll( uint64_t value ) {
-	// PowerPC for VxWorks 6.3 is big endian
+    // PowerPC for VxWorks 6.3 is big endian
     return value;
 }
 
@@ -195,26 +195,26 @@ Packet& Packet::operator >>(uint32_t& data)
 ////////////////////////////////////////////////////////////
 Packet& Packet::operator >>(int64_t& data)
 {
-	if(checkSize(sizeof(data)))
-	{
-		data = ntohll(*reinterpret_cast<const int64_t*>(&m_packetData[m_readPos]));
-		m_readPos += sizeof(data);
-	}
+    if(checkSize(sizeof(data)))
+    {
+        data = ntohll(*reinterpret_cast<const int64_t*>(&m_packetData[m_readPos]));
+        m_readPos += sizeof(data);
+    }
 
-	return *this;
+    return *this;
 }
 
 
 ////////////////////////////////////////////////////////////
 Packet& Packet::operator >>(uint64_t& data)
 {
-	if(checkSize(sizeof(data)))
-	{
-		data = ntohll(*reinterpret_cast<const uint64_t*>(&m_packetData[m_readPos]));
-		m_readPos += sizeof(data);
-	}
+    if(checkSize(sizeof(data)))
+    {
+        data = ntohll(*reinterpret_cast<const uint64_t*>(&m_packetData[m_readPos]));
+        m_readPos += sizeof(data);
+    }
 
-	return *this;
+    return *this;
 }
 
 

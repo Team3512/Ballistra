@@ -23,13 +23,13 @@ public:
 
     bool GetCollectorMode();
 
-    // Set angle of claw
+    // Set angle of claw in degrees
     void SetAngle( float shooterAngle );
 
     // Manually set the value of the angle motor
     void ManualSetAngle(float value);
 
-    // Returns setpoint of rotator's internal PID loop
+	// Returns setpoint of rotator's internal PID loop in degrees
     double GetTargetAngle() const;
 
     // Sets speed of claw's intake wheel

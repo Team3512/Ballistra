@@ -9,6 +9,9 @@ Claw::Claw(float clawRotatePort,float clawWheelPort) :
     m_clawRotator = new GearBox<Talon>( 0 , 3 , 2 , clawRotatePort );
     m_intakeWheel = new GearBox<Talon>( 0 , 0 , 0 , clawWheelPort );
 
+    // Sets degrees rotated per pulse of encoder
+    m_clawRotator->setDistancePerPulse( 1.0 );
+
     m_ballShooter.push_back( new Solenoid( 1 ) );
     m_ballShooter.push_back( new Solenoid( 2 ) );
     m_ballShooter.push_back( new Solenoid( 3 ) );
@@ -68,12 +71,6 @@ void Claw::ReloadPID() {
     i = atof( m_settings.getValueFor( "PID_ARM_ROTATE_I" ).c_str() );
     d = atof( m_settings.getValueFor( "PID_ARM_ROTATE_D" ).c_str() );
     m_clawRotator->setPID( p , i , d );
-
-    // Set shooter intake wheel PID
-    p = atof( m_settings.getValueFor( "PID_ARM_WHEEL_P" ).c_str() );
-    i = atof( m_settings.getValueFor( "PID_ARM_WHEEL_I" ).c_str() );
-    d = atof( m_settings.getValueFor( "PID_ARM_WHEEL_D" ).c_str() );
-    m_intakeWheel->setPID( p , i , d );
 }
 
 void Claw::Shoot() {

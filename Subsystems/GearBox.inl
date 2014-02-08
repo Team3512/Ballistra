@@ -51,10 +51,6 @@ GearBox<T>::GearBox( unsigned int shifterChan , unsigned int encA ,
     }
 
     if ( m_havePID ) {
-        // c = PI * 10.16cm [wheel diameter]
-        // dPerP = c / pulses
-        m_encoder->SetDistancePerPulse( 3.14159265 * 10.16 / 360.0 );
-
         m_encoder->SetPIDSourceParameter( Encoder::kDistance );
 
         m_encoder->Start();
@@ -89,6 +85,9 @@ void GearBox<T>::setSetpoint( float setpoint ) {
 
         m_pid->SetSetpoint( setpoint );
     }
+    else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
+    }
 }
 
 template <class T>
@@ -97,6 +96,7 @@ float GearBox<T>::getSetpoint() const {
         return m_pid->GetSetpoint();
     }
     else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
         return 0.f;
     }
 }
@@ -117,6 +117,9 @@ void GearBox<T>::setPID( float p , float i , float d ) {
     if ( m_havePID ) {
         m_pid->SetPID( p , i , d );
     }
+    else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
+    }
 }
 
 template <class T>
@@ -124,12 +127,32 @@ void GearBox<T>::setF( float f ) {
     if ( m_havePID ) {
         m_pid->SetPID( m_pid->GetP() , m_pid->GetI() , m_pid->GetD() , f );
     }
+    else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
+    }
+}
+
+template <class T>
+void GearBox<T>::setDistancePerPulse( double distancePerPulse ) {
+    if ( m_havePID ) {
+        m_encoder->SetDistancePerPulse( distancePerPulse );
+    }
+}
+
+template <class T>
+void GearBox<T>::setPIDSourceParameter( PIDSource::PIDSourceParameter pidSource ) {
+    if ( m_havePID ) {
+        m_encoder->SetPIDSourceParameter( pidSource );
+    }
 }
 
 template <class T>
 void GearBox<T>::resetEncoder() {
     if ( m_havePID ) {
         m_encoder->Reset();
+    }
+    else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
     }
 }
 
@@ -139,6 +162,7 @@ double GearBox<T>::getDistance() const {
         return m_encoder->GetDistance();
     }
     else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
         return 0.f;
     }
 }
@@ -149,6 +173,7 @@ double GearBox<T>::getRate() const {
         return m_encoder->GetRate();
     }
     else {
+        // TODO emit warning since PID doesn't work (possibly through logger?)
         return 0.f;
     }
 }

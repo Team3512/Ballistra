@@ -21,7 +21,7 @@ double TrapezoidProfile::updateSetpoint( double curSetpoint , double curSource ,
     double setpoint = curSetpoint;
     double period = curTime - m_lastTime;
 
-    m_dataSem.take();
+    m_varSem.take();
 
     if ( m_mode == SetpointMode::distance ) {
         if ( curTime < m_timeToMaxVelocity ) {
@@ -58,7 +58,7 @@ double TrapezoidProfile::updateSetpoint( double curSetpoint , double curSource ,
         }
     }
 
-    m_dataSem.give();
+    m_varSem.give();
 
     m_lastTime = curTime;
     return setpoint;
@@ -70,7 +70,7 @@ double TrapezoidProfile::setGoal( double goal , double curSource , double t ) {
     m_sign = (setpoint < 0) ? -1.0 : 1.0;
     m_timeToMaxVelocity = m_velocity / m_acceleration;
 
-    m_dataSem.take();
+    m_varSem.take();
 
     double deltaPosMaxV = (m_sign * setpoint) - (m_timeToMaxVelocity * m_velocity);
     double timeAtMaxV = deltaPosMaxV / m_velocity;
@@ -78,7 +78,7 @@ double TrapezoidProfile::setGoal( double goal , double curSource , double t ) {
     m_timeFromMaxVelocity = m_timeToMaxVelocity + timeAtMaxV;
     m_timeTotal = m_timeFromMaxVelocity + m_timeToMaxVelocity;
 
-    m_dataSem.give();
+    m_varSem.give();
 
     m_lastTime = t;
 

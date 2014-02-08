@@ -66,7 +66,7 @@ private:
 
     SetpointMode m_mode;
 
-    ReentrantSemaphore m_dataSem;
+    ReentrantSemaphore m_varSem;
 };
 
 

@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <PIDOutput.h>
+#include <PIDSource.h>
 
 class Encoder;
 class PIDController;
@@ -47,6 +48,12 @@ public:
 
     // Set feed-forward term on PID controller
     void setF( float f );
+
+    // Calls Encoder::SetDistancePerPulse internally
+    void setDistancePerPulse( double distancePerPulse );
+
+    // Determines whether encoder returns distance or rate from PIDGet()
+    void setPIDSourceParameter( PIDSource::PIDSourceParameter pidSource );
 
     // Resets encoder distance to 0
     void resetEncoder();

@@ -121,6 +121,11 @@ void Robot::OperatorControl() {
 
         }
 
+        if ( drive1Buttons.releasedButton( 8 ) ) {
+            robotDrive->reloadPID();
+            claw->ReloadPID();
+        }
+
         drive1Buttons.updateButtons();
         drive2Buttons.updateButtons();
     }
