@@ -19,10 +19,10 @@ DriveTrain::DriveTrain() :
     m_squaredInputs = false;
     m_deadband = 0.f;
 
-    m_leftGrbx = new GearBox<Talon>( 7 , 8 , 7 , 1 , 2 );
+    m_leftGrbx = new GearBox<Talon>( 7 , 8 , 7 , 1 , 2, 3 );
     m_leftGrbx->setReversed( true );
 
-    m_rightGrbx = new GearBox<Talon>( 0 , 10 , 9 , 3 , 4 );
+    m_rightGrbx = new GearBox<Talon>( 0 , 10 , 9 , 4 , 5, 6 );
 
     reloadPID();
 }

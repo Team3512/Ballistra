@@ -1,6 +1,7 @@
 #include "Claw.hpp"
 
 #include <Solenoid.h>
+#include <DriverStationLCD.h>
 
 Claw::Claw(float clawRotatePort,float clawWheelPort) :
         m_settings( "RobotSettings.txt" ),
@@ -12,12 +13,14 @@ Claw::Claw(float clawRotatePort,float clawWheelPort) :
     m_ballShooter.push_back( new Solenoid( 2 ) );
     m_ballShooter.push_back( new Solenoid( 3 ) );
     m_ballShooter.push_back( new Solenoid( 4 ) );
+    collectorArm = new Solenoid(8);
 }
 
 Claw::~Claw(){
     // Free solenoids
     for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
         delete m_ballShooter[i];
+        delete collectorArm;
     }
     m_ballShooter.clear();
 }
@@ -26,8 +29,18 @@ void Claw::SetAngle(float shooterAngle){
     m_clawRotator->setSetpoint( shooterAngle );
 }
 
+void Claw::ManualSetAngle(float value) {
+	m_clawRotator->setManual(value);
+}
+
 double Claw::GetTargetAngle() const {
     return m_clawRotator->getSetpoint();
+}
+
+double Claw::getDistance()
+{
+	return m_clawRotator->getDistance();
+
 }
 
 void Claw::SetWheelSetpoint( float speed ) {
@@ -75,6 +88,18 @@ void Claw::Shoot() {
     }
 }
 
+void Claw::SetCollectorMode(bool collectorMode){
+	if(collectorMode == true){
+		collectorArm->Set(true);
+	}
+	else{
+		collectorArm->Set(false);
+	}
+}
+bool Claw::GetCollectorMode(){
+	return collectorArm->Get();
+}
+
 void Claw::Update() {
     if ( m_isShooting ) {
         if ( m_shootTimer.HasPeriodPassed( 0.5 ) ) {
@@ -91,6 +116,11 @@ void Claw::Update() {
             m_isShooting = false;
         }
     }
+
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Distance:  %f", m_clawRotator->getDistance());
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "Rate:  %f", m_clawRotator->getRate());
+    DriverStationLCD::GetInstance()->UpdateLCD();
+
 }
 
 bool Claw::IsShooting() const {

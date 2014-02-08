@@ -8,7 +8,7 @@ Robot::Robot() :
         shootButtons( 3 ),
         pidGraph( 3513 ) {
     robotDrive = new DriveTrain();
-    claw = new Claw( 5 , 6 );
+    claw = new Claw( 8, 7 );
 
     driveStick1 = new Joystick (1);
     driveStick2 = new Joystick (2);
@@ -19,7 +19,7 @@ Robot::Robot() :
     displayTimer = new Timer ();
 
     kinect = new RobotKinect();
-    robotPosition = new RobotPosition(1,2,3,4);
+    //robotPosition = new RobotPosition(1,2,3,4);
     accelerometer = new ADXL345_I2C_ALT (1);
 
     driverStation = DriverStationDisplay<Robot>::getInstance( atoi( settings.getValueFor( "DS_Port" ).c_str() ) );
@@ -27,7 +27,7 @@ Robot::Robot() :
     driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
 
     pidGraph.resetTime();
-    pidGraph.setSendInterval( 20 );
+    pidGraph.setSendInterval( 200 );
 
     logger1 = new Logger ();
     ls = new LogStream(logger1);
@@ -65,11 +65,9 @@ Robot::~Robot(){
 
 void Robot::OperatorControl() {
     mainCompressor->Start();
-    robotPosition->zeroValues();
+    //robotPosition->zeroValues();
 
     while (IsOperatorControl() && IsEnabled()){
-        DS_PrintOut();
-
         //Kinect Drive
         //robotDrive->setLeftManual( kinect->GetArmScale().second );
         //robotDrive->setRightManual( kinect->GetArmScale().first );
@@ -86,7 +84,42 @@ void Robot::OperatorControl() {
             claw->Shoot();
         }
 
+        //Engage collector
+        if( drive1Buttons.releasedButton(2)) {
+        	claw->SetCollectorMode(!claw->GetCollectorMode());
+        }
+
+        //claw->SetAngle(34);
+
+        if(shootStick->GetRawButton(12))
+        {
+        	claw->ResetEncoders();
+
+        }
+
+        if(shootStick->GetRawButton(6))
+        {
+        	claw->SetAngle(90);
+
+        }
+        else if(shootStick->GetRawButton(7))
+        {
+        	claw->SetAngle(180);
+
+        }
+        else
+        {
+        	claw->ManualSetAngle(shootStick->GetY()/1.2);
+
+        }
+
         claw->Update();
+        if (pidGraph.hasIntervalPassed()){
+        	pidGraph.graphData(claw->GetTargetAngle(),"Left Setpoint");
+        	pidGraph.graphData(claw->getDistance(), "Left PID");
+            pidGraph.resetInterval();
+
+        }
 
         drive1Buttons.updateButtons();
         drive2Buttons.updateButtons();

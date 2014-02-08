@@ -6,6 +6,7 @@
 #include <Encoder.h>
 #include <Talon.h>
 #include <Timer.h>
+#include <DriverStationLCD.h>
 
 #include "../Settings.hpp"
 #include "GearBox.hpp"
@@ -17,8 +18,16 @@ public:
     Claw (float clawRotatePort,float clawWheelPort);
     ~Claw();
 
+    // Set mode of collector
+    void SetCollectorMode( bool collectorMode );
+
+    bool GetCollectorMode();
+
     // Set angle of claw
     void SetAngle( float shooterAngle );
+
+    // Manually set the value of the angle motor
+    void ManualSetAngle(float value);
 
     // Returns setpoint of rotator's internal PID loop
     double GetTargetAngle() const;
@@ -29,13 +38,15 @@ public:
 
     double GetWheelSetpoint() const;
 
+    double getDistance();
+
     // Set encoder distances to 0
     void ResetEncoders();
 
     // Reload PID constants
     void ReloadPID();
 
-    // Starts activating solenoids to shoot ball
+    // StartShoots activating solenoids to shoot ball
     void Shoot();
 
     // Continues process of shooting
@@ -54,6 +65,7 @@ private:
     bool m_isShooting;
 
     std::vector<Solenoid*> m_ballShooter;
+    Solenoid *collectorArm;
 };
 
 #endif // CLAW_HPP
