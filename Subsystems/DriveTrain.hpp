@@ -21,7 +21,7 @@ public:
     /* Drives robot with given speed and turn values [-1..1].
      * This is a convenience function for use in Operator Control.
      */
-    void drive( float speed , float turn );
+    void drive( float speed , float turn, float fudgeLeft = 1, float fudgeRight = 1 );
 
     /* If enabled, squares joystick inputs for fine-tuned driving at low speeds
      * while maintaining max speed

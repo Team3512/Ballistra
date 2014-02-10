@@ -158,7 +158,7 @@ void GearBox<T>::resetEncoder() {
 
 template <class T>
 double GearBox<T>::getDistance() const {
-    if ( m_havePID ) {
+	if ( m_havePID ) {
         return m_encoder->GetDistance();
     }
     else {

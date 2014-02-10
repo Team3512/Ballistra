@@ -19,10 +19,10 @@ DriveTrain::DriveTrain() :
     m_squaredInputs = false;
     m_deadband = 0.f;
 
-    m_leftGrbx = new GearBox<Talon>( 7 , 8 , 7 , 1 , 2, 3 );
+    m_leftGrbx = new GearBox<Talon>( 6 , 10, 11 , 1 , 2, 3 );
     m_leftGrbx->setReversed( true );
 
-    m_rightGrbx = new GearBox<Talon>( 0 , 10 , 9 , 4 , 5, 6 );
+    m_rightGrbx = new GearBox<Talon>( 0 , 18 , 9 , 4 , 5, 6 );
 
     // c = PI * 10.16cm [wheel diameter]
     // dPerP = c / pulses
@@ -37,7 +37,7 @@ DriveTrain::~DriveTrain() {
     delete m_rightGrbx;
 }
 
-void DriveTrain::drive( float speed , float turn ) {
+void DriveTrain::drive( float speed , float turn, float fudgeLeft, float fudgeRight ) {
     // Limit values to [-1 .. 1]
     if ( speed > 1.f ) {
         speed = 1.f;
@@ -108,8 +108,17 @@ void DriveTrain::drive( float speed , float turn ) {
 
     normalize( wheelSpeeds , 2 );
 
-    m_leftGrbx->setManual( wheelSpeeds[0] );
-    m_rightGrbx->setManual( wheelSpeeds[1] );
+    if(speed < 0)
+    {
+    	float temp;
+    	temp = fudgeLeft;
+    	fudgeLeft = fudgeRight;
+    	fudgeRight = temp;
+
+    }
+
+    m_leftGrbx->setManual( wheelSpeeds[0]*fudgeLeft );
+    m_rightGrbx->setManual( wheelSpeeds[1]*fudgeRight );
 }
 
 void DriveTrain::squareInputs( bool squared ) {

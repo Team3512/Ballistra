@@ -17,6 +17,7 @@ Robot::Robot() :
     mainCompressor = new Compressor (1,1);
     autonTimer = new Timer ();
     displayTimer = new Timer ();
+    limitSwitch = new DigitalInput(2);
 
     kinect = new RobotKinect();
     //robotPosition = new RobotPosition(1,2,3,4);
@@ -38,6 +39,7 @@ Robot::Robot() :
     logFileSink->setVerbosityLevels(LogEvent::VERBOSE_ALL);
     logServerSink->setVerbosityLevels(LogEvent::VERBOSE_ALL);
     logServerSink->startServer (4097);
+    displayTimer->Start();
 }
 
 Robot::~Robot(){
@@ -62,44 +64,63 @@ Robot::~Robot(){
 
     delete accelerometer;
 }
-
+void Robot::calibrateTalons() {
+	robotDrive->drive(1,0);
+	Wait (3.0);
+	robotDrive->drive(0,0);
+	Wait (3.0);
+	robotDrive->drive(-1,0);
+	Wait (3.0);
+	robotDrive->drive(0,0);
+	Wait (3.0);
+}
 void Robot::OperatorControl() {
     mainCompressor->Start();
     //robotPosition->zeroValues();
-
     while (IsOperatorControl() && IsEnabled()){
         //Kinect Drive
         //robotDrive->setLeftManual( kinect->GetArmScale().second );
         //robotDrive->setRightManual( kinect->GetArmScale().first );
 
+    	DS_PrintOut();
+
         //arcade Drive
-        robotDrive->drive( driveStick1->GetY() , driveStick2->GetX() );
+        robotDrive->drive( driveStick1->GetY() , driveStick2->GetZ(), 0.917 , 1);
 
         if ( drive1Buttons.releasedButton( 1 ) ) {
             robotDrive->setGear( !robotDrive->getGear() );
         }
 
         //Shoots Ball
-        if (shootStick->GetRawButton(1) && !claw->IsShooting()){
+        if ((shootStick->GetRawButton(1) || driveStick2->GetRawButton(1))&& !claw->IsShooting()){
             claw->Shoot();
         }
 
         //Engage collector
-        if( drive1Buttons.releasedButton(2)) {
+        if( shootButtons.releasedButton(2)) {
         	claw->SetCollectorMode(!claw->GetCollectorMode());
         }
 
         //claw->SetAngle(34);
 
-        if(shootStick->GetRawButton(12))
+
+        if (shootStick->GetRawButton(3))
         {
-        	claw->ResetEncoders();
+        	claw->SetWheelManual(-1);
 
         }
 
+        else if (shootStick->GetRawButton(4))
+        {
+        	claw->SetWheelManual(1);
+        }
+        else
+        {
+        	claw->SetWheelManual(0);
+        }
         if(shootStick->GetRawButton(6))
         {
-        	claw->SetAngle(90);
+        	claw->SetAngle(135);
 
         }
         else if(shootStick->GetRawButton(7))
@@ -109,17 +130,15 @@ void Robot::OperatorControl() {
         }
         else
         {
-        	claw->ManualSetAngle(shootStick->GetY()/1.2);
+        	claw->ManualSetAngle(shootStick->GetY());
 
+        }
+        if (!limitSwitch->Get())
+        {
+        	claw->ResetEncoders();
         }
 
         claw->Update();
-        if (pidGraph.hasIntervalPassed()){
-        	pidGraph.graphData(claw->GetTargetAngle(),"Left Setpoint");
-        	pidGraph.graphData(claw->getDistance(), "Left PID");
-            pidGraph.resetInterval();
-
-        }
 
         if ( drive1Buttons.releasedButton( 8 ) ) {
             robotDrive->reloadPID();
@@ -128,6 +147,7 @@ void Robot::OperatorControl() {
 
         drive1Buttons.updateButtons();
         drive2Buttons.updateButtons();
+        shootButtons.updateButtons();
     }
 }
 
@@ -150,6 +170,8 @@ void Robot::Disabled(){
 }
 
 void Robot::Test(){
+    calibrateTalons();
+
     mainCompressor->Start();
 
     testDriveTrain(true, true, -1, 1);
@@ -193,6 +215,8 @@ void Robot::DS_PrintOut() {
     if ( pidGraph.hasIntervalPassed() ) {
         pidGraph.graphData( robotDrive->getLeftDist() , "Left PID" );
         pidGraph.graphData( robotDrive->getLeftSetpoint() , "Left Setpoint" );
+     	pidGraph.graphData(claw->GetTargetAngle(),"Target Angle");
+     	pidGraph.graphData(claw->getDistance(), "Angle");
 
         pidGraph.resetInterval();
     }
@@ -204,11 +228,11 @@ void Robot::DS_PrintOut() {
         DriverStationLCD *userMessages = DriverStationLCD::GetInstance();
         userMessages->Clear();
 
-        userMessages->Printf(DriverStationLCD::kUser_Line1, 1,"accelerometer %f ",accelerometer->GetAcceleration(ADXL345_I2C_ALT::kAxis_X));
+        //userMessages->Printf(DriverStationLCD::kUser_Line1, 1,"accelerometer %f ",accelerometer->GetAcceleration(ADXL345_I2C_ALT::kAxis_X));
 
-        /*userMessages->Printf(DriverStationLCD::kUser_Line2, 1,"Encoder2: %f",robotPosition->GetLeftEncoder());
-         userMessages->Printf(DriverStationLCD::kUser_Line3, 1," x: %f", robotPosition->GetX() );
-         userMessages->Printf(DriverStationLCD::kUser_Line4, 1," y: %f", robotPosition->GetY() );*/
+        //userMessages->Printf(DriverStationLCD::kUser_Line2, 1,"Encoder2: %f",robotPosition->GetLeftEncoder());
+        userMessages->Printf(DriverStationLCD::kUser_Line3, 1," Left : %f", (driveStick1->GetTwist() + 1)/2);
+        userMessages->Printf(DriverStationLCD::kUser_Line4, 1," Right : %f", (driveStick2->GetTwist() + 1)/2 );
 
         userMessages->UpdateLCD();
 

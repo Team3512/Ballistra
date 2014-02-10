@@ -6,17 +6,17 @@
 Claw::Claw(float clawRotatePort,float clawWheelPort) :
         m_settings( "RobotSettings.txt" ),
         m_isShooting( false ) {
-    m_clawRotator = new GearBox<Talon>( 0 , 3 , 2 , clawRotatePort );
+    m_clawRotator = new GearBox<Talon>( 0 , 6 , 7 , clawRotatePort );
     m_intakeWheel = new GearBox<Talon>( 0 , 0 , 0 , clawWheelPort );
 
     // Sets degrees rotated per pulse of encoder
-    m_clawRotator->setDistancePerPulse( 1.0 );
+    m_clawRotator->setDistancePerPulse( 1.0/71.0f );
 
     m_ballShooter.push_back( new Solenoid( 1 ) );
     m_ballShooter.push_back( new Solenoid( 2 ) );
     m_ballShooter.push_back( new Solenoid( 3 ) );
     m_ballShooter.push_back( new Solenoid( 4 ) );
-    collectorArm = new Solenoid(8);
+    collectorArm = new Solenoid(5);
 }
 
 Claw::~Claw(){

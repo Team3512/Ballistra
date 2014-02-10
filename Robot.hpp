@@ -7,6 +7,7 @@
 #include <Compressor.h>
 #include <Timer.h>
 #include <DriverStationLCD.h>
+#include <DigitalInput.h>
 
 #include "Subsystems/DriveTrain.hpp"
 #include "Subsystems/Claw.hpp"
@@ -37,6 +38,7 @@ public:
     void Test ();
     bool testDriveTrain(bool shifterState, bool direction, float lowerBound,float upperBound);
     bool testCompressor();
+    void calibrateTalons();
 
     void AutonMotionProfile();
 
@@ -51,6 +53,7 @@ private:
     Joystick *driveStick1;
     Joystick *driveStick2;
     Joystick *shootStick;
+    DigitalInput *limitSwitch;
 
     ButtonTracker drive1Buttons;
     ButtonTracker drive2Buttons;
