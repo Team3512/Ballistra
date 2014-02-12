@@ -24,6 +24,11 @@ Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort, unsigned int
 
     m_zeroSwitch = new DigitalInput(zeroSwitchPort);
 
+    // Set up interrupt for encoder reset
+    m_zeroSwitch->RequestInterrupts( Claw::ResetClawEncoder , this );
+    m_zeroSwitch->SetUpSourceEdge( false , true );
+    m_zeroSwitch->EnableInterrupts();
+
     //magical values found using empirical testing don't change.
     setK(0.238f);
     m_l = 69.0f;
@@ -42,7 +47,10 @@ Claw::~Claw(){
     }
 
     delete m_collectorArm;
+
+    m_zeroSwitch->DisableInterrupts();
     delete m_zeroSwitch;
+
     delete m_vacuum;
     m_ballShooter.clear();
 }
@@ -193,7 +201,7 @@ float Claw::calcF()
 
 	}
 
-	return m_k*cos((GetAngle()+m_l)*M_PI/180.0f)/GetTargetAngle()*M_PI/180.0f;
+	return m_k*cos((GetAngle()+m_l)*M_PI/180.0f)/GetTargetAngle();
 
 }
 
@@ -204,4 +212,8 @@ bool Claw::IsShooting() const {
     else{
     	return false;
     }
+}
+
+void Claw::ResetClawEncoder( long unsigned int interruptAssertedMask, void* obj ) {
+    static_cast<Claw*>(obj)->m_clawRotator->resetEncoder();
 }
