@@ -23,13 +23,18 @@ public:
      */
     void drive( float speed , float turn, float fudgeLeft = 1, float fudgeRight = 1 );
 
-    /* If enabled, squares joystick inputs for fine-tuned driving at low speeds
-     * while maintaining max speed
-     */
-    void squareInputs( bool squared );
-
     // Sets joystick deadband
     void setDeadband( float band );
+
+    /* Sets joystick sensitivity
+     * Selectively cubes joystick inputs for fine-tuned driving at low speeds
+     * while maintaining max speed.
+     *
+     * Parameter tells function what proportions of y=x^3 and y=x to combine.
+     * Value of 1 (default) makes driving most sensitive to input at low speeds
+     * and uses x^3 completely.
+     */
+    void setSensitivity( float sensitivity );
 
     // Set encoder distances to 0
     void resetEncoders();
@@ -68,8 +73,8 @@ public:
 private:
     Settings m_settings;
 
-    bool m_squaredInputs;
     float m_deadband;
+    float m_sensitivity;
 
     GearBox<Talon>* m_leftGrbx;
     GearBox<Talon>* m_rightGrbx;

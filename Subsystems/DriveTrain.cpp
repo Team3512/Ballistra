@@ -16,8 +16,8 @@ const float DriveTrain::maxWheelSpeed = 150.f;
 DriveTrain::DriveTrain() :
             TrapezoidProfile( maxWheelSpeed , 5.f ),
             m_settings( "RobotSettings.txt" ) {
-    m_squaredInputs = false;
     m_deadband = 0.f;
+    m_sensitivity = 1.f;
 
     m_leftGrbx = new GearBox<Talon>( 6 , 10, 11 , 1 , 2, 3 );
     m_leftGrbx->setReversed( true );
@@ -52,29 +52,23 @@ void DriveTrain::drive( float speed , float turn, float fudgeLeft, float fudgeRi
         turn = -1.f;
     }
 
-    if ( m_squaredInputs ) {
-        if ( turn < 0 ) {
-            turn = -pow( turn , 2 );
-        }
-        else {
-            turn = pow( turn , 2 );
-        }
-
-        if ( speed < 0 ) {
-            speed = -pow( speed , 2 );
-        }
-        else {
-            speed = pow( speed , 2 );
-        }
-    }
-
     // Apply joystick deadband
-    if ( fabs(speed) < m_deadband ) {
+    if ( fabs(speed) > m_deadband ) {
+        speed = ( speed - m_deadband ) / ( 1 - m_deadband );
+    }
+    else {
         speed = 0.f;
     }
-    if ( fabs(turn) < m_deadband ) {
+    if ( fabs(turn) > m_deadband ) {
+        turn = ( turn - m_deadband ) / ( 1 - m_deadband );
+    }
+    else {
         turn = 0.f;
     }
+
+    // Apply sensitivity adjustment
+    speed = pow( speed , 3 ) * ( 1 - m_sensitivity ) + speed * m_sensitivity;
+    turn = pow( turn , 3 ) * ( 1 - m_sensitivity ) + turn * m_sensitivity;
 
     // Will contain left and right speeds
     float wheelSpeeds[2];
@@ -121,12 +115,12 @@ void DriveTrain::drive( float speed , float turn, float fudgeLeft, float fudgeRi
     m_rightGrbx->setManual( wheelSpeeds[1]*fudgeRight );
 }
 
-void DriveTrain::squareInputs( bool squared ) {
-    m_squaredInputs = squared;
-}
-
 void DriveTrain::setDeadband( float band ) {
     m_deadband = band;
+}
+
+void DriveTrain::setSensitivity( float sensitivity ) {
+    m_sensitivity = sensitivity;
 }
 
 void DriveTrain::resetEncoders() {
