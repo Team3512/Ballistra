@@ -54,13 +54,23 @@ void DriveTrain::drive( float speed , float turn, float fudgeLeft, float fudgeRi
 
     // Apply joystick deadband
     if ( fabs(speed) > m_deadband ) {
-        speed = ( speed - m_deadband ) / ( 1 - m_deadband );
+        if ( speed > 0 ) {
+            speed = ( speed - m_deadband ) / ( 1 - m_deadband );
+        }
+        else {
+            speed = ( speed + m_deadband ) / ( 1 - m_deadband );
+        }
     }
     else {
         speed = 0.f;
     }
     if ( fabs(turn) > m_deadband ) {
-        turn = ( turn - m_deadband ) / ( 1 - m_deadband );
+        if ( turn > 0 ) {
+            turn = ( turn - m_deadband ) / ( 1 - m_deadband );
+        }
+        else {
+            turn = ( turn + m_deadband ) / ( 1 - m_deadband );
+        }
     }
     else {
         turn = 0.f;
