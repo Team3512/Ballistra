@@ -71,7 +71,7 @@ public:
     // Shifts gearbox to another gear if available
     void setGear( bool gear );
 
-    // Gets current gearbox gear if available (false if no)
+    // Gets current gearbox gear if available (false if not)
     bool getGear() const;
 
     // Sets motor speed to 'output'

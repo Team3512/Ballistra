@@ -4,8 +4,6 @@
 //Author: FRC Team 3512, Spartatroniks
 //=============================================================================
 
-#include "GearBox.hpp"
-
 #include <cmath>
 #include <Encoder.h>
 #include <Solenoid.h>

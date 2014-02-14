@@ -21,20 +21,10 @@ public:
     /* Drives robot with given speed and turn values [-1..1].
      * This is a convenience function for use in Operator Control.
      */
-    void drive( float speed , float turn, float fudgeLeft = 1, float fudgeRight = 1 );
+    void drive( float throttle, float turn, bool isQuickTurn = false );
 
     // Sets joystick deadband
     void setDeadband( float band );
-
-    /* Sets joystick sensitivity
-     * Selectively cubes joystick inputs for fine-tuned driving at low speeds
-     * while maintaining max speed.
-     *
-     * Parameter tells function what proportions of y=x^3 and y=x to combine.
-     * Value of 1 (default) makes driving most sensitive to input at low speeds
-     * and uses x^3 completely.
-     */
-    void setSensitivity( float sensitivity );
 
     // Set encoder distances to 0
     void resetEncoders();
@@ -65,7 +55,8 @@ public:
     // Shifts internal gearboxes
     void setGear( bool gear );
 
-    // Returns gear of internal gearboxes
+    // Returns gear of internal gearboxes (true assumed to be high gear
+    // TODO check if 'true' is high gear
     bool getGear() const;
 
     const static float maxWheelSpeed;
@@ -76,11 +67,24 @@ private:
     float m_deadband;
     float m_sensitivity;
 
+    // Cheesy Drive variables
+    float m_oldTurn;
+    float m_quickStopAccumulator;
+    float m_negInertiaAccumulator;
+
     GearBox<Talon>* m_leftGrbx;
     GearBox<Talon>* m_rightGrbx;
 
-    // Normalize motor values if any are outside of [-1..1]
-    void normalize( float* wheelSpeeds , unsigned int arraySize );
+    /* Zeroes value if its inside deadband range, and rescales values outside
+     * of it
+     */
+    float applyDeadband( float value );
+
+    // Limits 'value' to within +- 'limit' (limit should be positive)
+    template <class T>
+    T limit( T value , T limit );
 };
+
+#include "DriveTrain.inl"
 
 #endif // DRIVE_TRAIN_HPP

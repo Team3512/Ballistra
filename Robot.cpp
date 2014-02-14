@@ -85,7 +85,12 @@ void Robot::OperatorControl() {
     	DS_PrintOut();
 
         //arcade Drive
-        robotDrive->drive( driveStick1->GetY() , driveStick2->GetZ(), 0.917 , 1);
+        if ( driveStick2->GetRawButton( 2 ) ) {
+            robotDrive->drive( driveStick1->GetY() , driveStick2->GetZ(), true );
+        }
+        else {
+            robotDrive->drive( driveStick1->GetY() , driveStick2->GetZ() );
+        }
 
         if ( drive1Buttons.releasedButton( 1 ) ) {
             robotDrive->setGear( !robotDrive->getGear() );
