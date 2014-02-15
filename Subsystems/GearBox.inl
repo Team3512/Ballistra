@@ -17,7 +17,7 @@ template <class T>
 GearBox<T>::GearBox( unsigned int shifterChan , unsigned int encA ,
         unsigned int encB , unsigned int motor1 , unsigned int motor2 ,
         unsigned int motor3 ) {
-        
+
         isclaw = false;
     if ( encA != 0 && encB != 0 ) {
         m_encoder = new Encoder( encA , encB );
@@ -86,7 +86,7 @@ void GearBox<T>::setSetpoint( float setpoint ) {
         if(!m_pid->IsEnabled())
         {
             m_pid->Enable();
-        
+
         }
 
         m_pid->SetSetpoint( setpoint );
@@ -205,6 +205,7 @@ template <class T>
 bool GearBox<T>::getGear() const {
     if ( m_shifter != NULL ) {
         return m_shifter->Get();
+
     }
     else {
         return false;
@@ -217,9 +218,9 @@ void GearBox<T>::PIDWrite( float output ) {
     if(isclaw)
     {
         std::cout << "claw output: " << output << "\n";
-        
+
     }
-    
+
     for ( unsigned int i = 0 ; i < m_motors.size() ; i++ ) {
         if ( !m_isReversed ) {
             m_motors[i]->Set( output );
@@ -228,9 +229,9 @@ void GearBox<T>::PIDWrite( float output ) {
             m_motors[i]->Set( -output );
         }
     }
-    
+
     updateGear();
-    
+
 }
 
 template <class T>
@@ -239,24 +240,24 @@ void GearBox<T>::updateGear()
         if(m_shifter == NULL || m_targetGear == m_shifter->Get())
         {
             return;
-        
+
         }
-        
+
         for(unsigned int i = 0; i < m_motors.size(); i++)
         {
             if(fabs(m_motors[i]->Get()) < 0.4)
             {
                 return;
-            
+
             }
-        
+
         }
-        
+
         //TODO: get rid of magical values 4 and 0.4
         if ( (m_pid->IsEnabled() && m_encoder->GetRate() > 4) || !m_pid->IsEnabled())
         {
             m_shifter->Set( m_targetGear );
 
         }
-        
+
 }
