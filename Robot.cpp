@@ -104,13 +104,17 @@ void Robot::OperatorControl() {
 
         //claw->SetAngle(34);
 
+        /*float kval = (shootStick->GetTwist()+1)/2;
+        claw->ManualSetAngle(kval);//.238
+        DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3, "voltage=%f", kval);
+        DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line4, "y: ", shootStick->GetY());
+*/
 
         if (shootStick->GetRawButton(3))
         {
         	claw->SetWheelManual(-1);
 
         }
-
         else if (shootStick->GetRawButton(4))
         {
         	claw->SetWheelManual(1);
@@ -119,6 +123,7 @@ void Robot::OperatorControl() {
         {
         	claw->SetWheelManual(0);
         }
+
         if(shootStick->GetRawButton(6))
         {
         	claw->SetAngle(135);
@@ -129,11 +134,12 @@ void Robot::OperatorControl() {
         	claw->SetAngle(180);
 
         }
-        else
+        else if(shootStick->GetRawButton(9))
         {
         	claw->ManualSetAngle(shootStick->GetY());
 
         }
+
         if (!limitSwitch->Get())
         {
         	claw->ResetEncoders();
@@ -141,7 +147,7 @@ void Robot::OperatorControl() {
 
         claw->Update();
 
-        if ( drive1Buttons.releasedButton( 8 ) ) {
+        if ( shootButtons.releasedButton( 8 ) ) {
             robotDrive->reloadPID();
             claw->ReloadPID();
         }

@@ -55,8 +55,16 @@ public:
     // Returns true if this instance is in the middle of shooting
     bool IsShooting() const;
 
+    void setK(float k);
+
+    void setF(float f);
+
+    float calcF();
+
 private:
     Settings m_settings;
+    float m_k;
+    float m_l;
 
     GearBox<Talon>* m_clawRotator;
     GearBox<Talon>* m_intakeWheel;

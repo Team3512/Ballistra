@@ -1,5 +1,9 @@
 #include "Claw.hpp"
 
+#ifndef M_PI
+#define M_PI 3.14159265
+#endif
+
 #include <Solenoid.h>
 #include <DriverStationLCD.h>
 
@@ -11,7 +15,9 @@ Claw::Claw(float clawRotatePort,float clawWheelPort) :
 
     // Sets degrees rotated per pulse of encoder
     m_clawRotator->setDistancePerPulse( (1.0/71.0f)*14.0 /44.0 );
+    m_clawRotator->setReversed(true);
 
+    setK(0.238f);
     m_ballShooter.push_back( new
     Solenoid( 1 ) );
     m_ballShooter.push_back( new Solenoid( 2 ) );
@@ -20,6 +26,8 @@ Claw::Claw(float clawRotatePort,float clawWheelPort) :
     collectorArm = new Solenoid(5);
     vacuum = new Solenoid (6);
     m_isVacuuming = false;
+    m_l = 69.0f;
+
 }
 
 Claw::~Claw(){
@@ -131,10 +139,29 @@ void Claw::Update() {
         }
     }
 
+	setF(calcF());
 
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Distance:  %f", m_clawRotator->getDistance());
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "Rate:  %f", m_clawRotator->getRate());
     DriverStationLCD::GetInstance()->UpdateLCD();
+
+}
+
+void Claw::setF(float f)
+{
+	m_clawRotator->setF(f);
+
+}
+
+void Claw::setK(float k)
+{
+	m_k = k;
+
+}
+
+float Claw::calcF()
+{
+	return m_k*cos((getDistance()+m_l)*M_PI/180.0f)/GetTargetAngle()*M_PI/180.0f;
 
 }
 
