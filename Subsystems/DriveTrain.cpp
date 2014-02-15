@@ -19,10 +19,10 @@ DriveTrain::DriveTrain() :
     m_squaredInputs = false;
     m_deadband = 0.f;
 
-    m_leftGrbx = new GearBox<Talon>( 6 , 10, 11 , 1 , 2, 3 );
+    m_leftGrbx = new GearBox<Talon>( 7 , 5, 6 , 1 , 2, 3 );
     m_leftGrbx->setReversed( true );
 
-    m_rightGrbx = new GearBox<Talon>( 0 , 18 , 9 , 4 , 5, 6 );
+    m_rightGrbx = new GearBox<Talon>( 0 , 3 , 4 , 4 , 5, 6 );
 
     // c = PI * 10.16cm [wheel diameter]
     // dPerP = c / pulses

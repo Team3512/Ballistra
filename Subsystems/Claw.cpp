@@ -6,17 +6,20 @@
 Claw::Claw(float clawRotatePort,float clawWheelPort) :
         m_settings( "RobotSettings.txt" ),
         m_isShooting( false ) {
-    m_clawRotator = new GearBox<Talon>( 0 , 6 , 7 , clawRotatePort );
+    m_clawRotator = new GearBox<Talon>( 0 , 7 , 8 , clawRotatePort );
     m_intakeWheel = new GearBox<Talon>( 0 , 0 , 0 , clawWheelPort );
 
     // Sets degrees rotated per pulse of encoder
-    m_clawRotator->setDistancePerPulse( 1.0/71.0f );
+    m_clawRotator->setDistancePerPulse( (1.0/71.0f)*14.0 /44.0 );
 
-    m_ballShooter.push_back( new Solenoid( 1 ) );
+    m_ballShooter.push_back( new
+    Solenoid( 1 ) );
     m_ballShooter.push_back( new Solenoid( 2 ) );
     m_ballShooter.push_back( new Solenoid( 3 ) );
     m_ballShooter.push_back( new Solenoid( 4 ) );
     collectorArm = new Solenoid(5);
+    vacuum = new Solenoid (6);
+    m_isVacuuming = false;
 }
 
 Claw::~Claw(){
@@ -99,11 +102,16 @@ bool Claw::GetCollectorMode(){
 
 void Claw::Update() {
     if ( m_isShooting ) {
-        if ( m_shootTimer.HasPeriodPassed( 0.5 ) ) {
+        if ( m_shootTimer.HasPeriodPassed( 1.0 ) ) {
             // Return bow to default position
             for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
                 m_ballShooter[i]->Set( false );
             }
+            collectorArm->Set(false);
+            // Engage vacuum
+            m_isVacuuming = true;
+            vacuum->Set(true);
+            vacuumTimer.Start();
 
             // Reset shoot timer
             m_shootTimer.Stop();
@@ -113,6 +121,16 @@ void Claw::Update() {
             m_isShooting = false;
         }
     }
+    if (m_isVacuuming){
+        if (vacuumTimer.HasPeriodPassed(1.5)){
+        	vacuum->Set(false);
+        	m_isVacuuming = false;
+
+        	vacuumTimer.Stop();
+        	vacuumTimer.Reset();
+        }
+    }
+
 
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Distance:  %f", m_clawRotator->getDistance());
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "Rate:  %f", m_clawRotator->getRate());

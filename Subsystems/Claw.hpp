@@ -62,10 +62,14 @@ private:
     GearBox<Talon>* m_intakeWheel;
 
     Timer m_shootTimer;
+    Timer vacuumTimer;
     bool m_isShooting;
+    bool m_isVacuuming;
 
     std::vector<Solenoid*> m_ballShooter;
+    Solenoid *vacuum;
     Solenoid *collectorArm;
+
 };
 
 #endif // CLAW_HPP

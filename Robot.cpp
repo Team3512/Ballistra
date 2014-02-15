@@ -8,7 +8,7 @@ Robot::Robot() :
         shootButtons( 3 ),
         pidGraph( 3513 ) {
     robotDrive = new DriveTrain();
-    claw = new Claw( 8, 7 );
+    claw = new Claw( 7 , 8 );
 
     driveStick1 = new Joystick (1);
     driveStick2 = new Joystick (2);
@@ -26,6 +26,7 @@ Robot::Robot() :
     driverStation = DriverStationDisplay<Robot>::getInstance( atoi( settings.getValueFor( "DS_Port" ).c_str() ) );
 
     driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
+    //driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
 
     pidGraph.resetTime();
     pidGraph.setSendInterval( 200 );
@@ -231,8 +232,8 @@ void Robot::DS_PrintOut() {
         //userMessages->Printf(DriverStationLCD::kUser_Line1, 1,"accelerometer %f ",accelerometer->GetAcceleration(ADXL345_I2C_ALT::kAxis_X));
 
         //userMessages->Printf(DriverStationLCD::kUser_Line2, 1,"Encoder2: %f",robotPosition->GetLeftEncoder());
-        userMessages->Printf(DriverStationLCD::kUser_Line3, 1," Left : %f", (driveStick1->GetTwist() + 1)/2);
-        userMessages->Printf(DriverStationLCD::kUser_Line4, 1," Right : %f", (driveStick2->GetTwist() + 1)/2 );
+        //userMessages->Printf(DriverStationLCD::kUser_Line3, 1," Left : %f", (driveStick1->GetTwist() + 1)/2);
+        //userMessages->Printf(DriverStationLCD::kUser_Line4, 1," Right : %f", (driveStick2->GetTwist() + 1)/2 );
 
         userMessages->UpdateLCD();
 
