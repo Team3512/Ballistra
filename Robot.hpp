@@ -39,7 +39,10 @@ public:
     bool testCompressor();
     void calibrateTalons();
 
+    void RightLeftAuton();
     void AutonMotionProfile();
+
+    bool checkReflectiveStrips();
 
     void DS_PrintOut();
 

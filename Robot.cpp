@@ -24,8 +24,8 @@ Robot::Robot() :
 
     driverStation = DriverStationDisplay<Robot>::getInstance( atoi( settings.getValueFor( "DS_Port" ).c_str() ) );
 
+    driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
     driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
-    //driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
 
     pidGraph.resetTime();
     pidGraph.setSendInterval( 200 );
@@ -152,6 +152,7 @@ void Robot::OperatorControl() {
         drive1Buttons.updateButtons();
         drive2Buttons.updateButtons();
         shootButtons.updateButtons();
+        Wait (0.1);
     }
 }
 
