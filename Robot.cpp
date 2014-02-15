@@ -74,6 +74,7 @@ void Robot::calibrateTalons() {
 }
 void Robot::OperatorControl() {
     mainCompressor->Start();
+    claw->ManualSetAngle(0);
     //robotPosition->zeroValues();
     while (IsOperatorControl() && IsEnabled()){
         //Kinect Drive
@@ -121,19 +122,22 @@ void Robot::OperatorControl() {
         	claw->SetWheelManual(0);
         }
 
-        if(shootStick->GetRawButton(6))
+        if(shootButtons.pressedButton(7))
         {
-        	claw->SetAngle(135);
+        	std::cout << "setpoint: 150\n";
+        	claw->SetAngle(150);
 
         }
-        else if(shootStick->GetRawButton(7))
+        else if(shootButtons.pressedButton(9))
         {
-        	claw->SetAngle(180);
+        	std::cout << "setpoint: 100\n";
+        	claw->SetAngle(100);
 
         }
-        else if(shootStick->GetRawButton(9))
+        else if(shootButtons.pressedButton(11))
         {
-        	claw->ManualSetAngle(shootStick->GetY());
+        	std::cout << "setpoint: 0\n";
+        	claw->SetAngle(0);
 
         }
 
@@ -152,6 +156,9 @@ void Robot::OperatorControl() {
         drive1Buttons.updateButtons();
         drive2Buttons.updateButtons();
         shootButtons.updateButtons();
+
+        Wait(0.01);
+
     }
 }
 
@@ -165,6 +172,10 @@ void Robot::Autonomous(){
 }
 
 void Robot::Disabled(){
+
+	claw->ManualSetAngle(0);
+	claw->SetWheelManual(0);
+
     while (IsDisabled()){
         DS_PrintOut();
 
