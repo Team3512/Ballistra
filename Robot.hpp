@@ -16,7 +16,6 @@
 
 #include "RobotKinect.hpp"
 #include "RobotPosition.hpp"
-#include "ADXL345_I2C_ALT.h"
 
 #include "DriverStationDisplay.hpp"
 #include "LiveGrapherHost/GraphHost.hpp"
@@ -66,7 +65,6 @@ private:
 
     RobotKinect *kinect;
     RobotPosition *robotPosition;
-    ADXL345_I2C_ALT *accelerometer;
 
     // Used for sending data to the Driver Station
     DriverStationDisplay<Robot>* driverStation;
