@@ -77,6 +77,9 @@ public:
     // Sets motor speed to 'output'
     void PIDWrite( float output );
 
+    //updates the gear to targetState if it is safe todo so.
+    void updateGear();
+
 private:
     Encoder* m_encoder;
     PIDController* m_pid;
@@ -85,6 +88,7 @@ private:
 
     bool m_isReversed;
     bool m_havePID;
+    bool m_targetGear;
 
     std::vector<SpeedController*> m_motors;
 };
