@@ -10,6 +10,7 @@
 #include <vector>
 #include <PIDOutput.h>
 #include <PIDSource.h>
+#include <iostream>
 
 class Encoder;
 class PIDController;
@@ -79,6 +80,8 @@ public:
 
     //updates the gear to targetState if it is safe todo so.
     void updateGear();
+
+    bool isclaw;
 
 private:
     Encoder* m_encoder;
