@@ -18,7 +18,6 @@ GearBox<T>::GearBox( unsigned int shifterChan , unsigned int encA ,
         unsigned int encB , unsigned int motor1 , unsigned int motor2 ,
         unsigned int motor3 ) {
 
-        isclaw = false;
     if ( encA != 0 && encB != 0 ) {
         m_encoder = new Encoder( encA , encB );
         m_pid = new PIDController( 0 , 0 , 0 , 0 , m_encoder , this );
@@ -205,7 +204,6 @@ template <class T>
 bool GearBox<T>::getGear() const {
     if ( m_shifter != NULL ) {
         return m_shifter->Get();
-
     }
     else {
         return false;
@@ -214,12 +212,6 @@ bool GearBox<T>::getGear() const {
 
 template <class T>
 void GearBox<T>::PIDWrite( float output ) {
-
-    if(isclaw)
-    {
-        std::cout << "claw output: " << output << "\n";
-
-    }
 
     for ( unsigned int i = 0 ; i < m_motors.size() ; i++ ) {
         if ( !m_isReversed ) {
