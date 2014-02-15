@@ -16,7 +16,6 @@ Claw::Claw(float clawRotatePort,float clawWheelPort) :
     // Sets degrees rotated per pulse of encoder
     m_clawRotator->setDistancePerPulse( (1.0/71.0f)*14.0 /44.0 );
     m_clawRotator->setReversed(true);
-    m_clawRotator->isclaw = true;
 
     setK(0.238f);
     m_ballShooter.push_back( new

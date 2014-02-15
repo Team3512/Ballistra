@@ -81,8 +81,6 @@ public:
     //updates the gear to targetState if it is safe todo so.
     void updateGear();
 
-    bool isclaw;
-
 private:
     Encoder* m_encoder;
     PIDController* m_pid;
