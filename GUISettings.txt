@@ -2,3 +2,8 @@ TEXT LEFT_RPM left "Left RPM: 0" "Left RPM: %s"
 TEXT RIGHT_RPM left "Right RPM: 0" "Right RPM: %s"
 TEXT LEFT_DIST left "Left Distance: 0" "Left Distance: %s"
 TEXT RIGHT_DIST left "Right Distance: 0" "Right Distance: %s"
+
+STATUSLIGHT ANGLE_SHOOT_HIGH right "Aim High" "Aim High"
+STATUSLIGHT ANGLE_SHOOT_MED right "Aim Medium" "Aim Medium"
+STATUSLIGHT ANGLE_SHOOT_LOW right "Aim Low" "Aim Low"
+STATUSLIGHT ANGLE_PICKUP right "Pickup Angle" "Pickup Angle"
