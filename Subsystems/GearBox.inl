@@ -191,20 +191,7 @@ bool GearBox<T>::isReversed() const {
 template <class T>
 void GearBox<T>::setGear( bool gear ) {
     if ( m_shifter != NULL ) {
-        if ( m_havePID ) {
-            /* If no manual override and going fast enough, shift since shifter
-             * won't get stuck in neutral. The PID controller being disabled counts
-             * as a manual override.
-             * TODO find ideal minimum speed for shifting
-             */
-            if ( (m_pid->IsEnabled() && m_encoder->GetRate() > 4) || !m_pid->IsEnabled() ) {
-                m_shifter->Set( gear );
-            }
-        }
-        else {
-            // No encoder, so change gear anyway
-            m_shifter->Set( gear );
-        }
+        m_targetGear = gear;
     }
 }
 
@@ -228,4 +215,35 @@ void GearBox<T>::PIDWrite( float output ) {
             m_motors[i]->Set( -output );
         }
     }
+    
+    updateGear();
+    
+}
+
+template <class T>
+void GearBox<T>::updateGear()
+{
+        if(m_shifter == NULL || m_targetGear == m_shifter->Get())
+        {
+            return;
+        
+        }
+        
+        for(unsigned int i = 0; i < m_motors.size(); i++)
+        {
+            if(fabs(m_motors[i]->Get()) < 0.4)
+            {
+                return;
+            
+            }
+        
+        }
+        
+        //TODO: get rid of magical values 4 and 0.4
+        if ( (m_pid->IsEnabled() && m_encoder->GetRate() > 4) || !m_pid->IsEnabled())
+        {
+            m_shifter->Set( m_targetGear );
+
+        }
+        
 }
