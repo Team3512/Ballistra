@@ -21,7 +21,6 @@ Robot::Robot() :
 
     kinect = new RobotKinect();
     //robotPosition = new RobotPosition(1,2,3,4);
-    accelerometer = new ADXL345_I2C_ALT (1);
 
     driverStation = DriverStationDisplay<Robot>::getInstance( atoi( settings.getValueFor( "DS_Port" ).c_str() ) );
 
@@ -62,8 +61,6 @@ Robot::~Robot(){
     delete ls;
     delete logFileSink;
     delete logServerSink;
-
-    delete accelerometer;
 }
 void Robot::calibrateTalons() {
 	robotDrive->drive(1,0);
