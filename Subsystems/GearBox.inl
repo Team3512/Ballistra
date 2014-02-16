@@ -39,6 +39,8 @@ GearBox<T>::GearBox( unsigned int shifterChan , unsigned int encA ,
 
     m_isReversed = false;
 
+    m_targetGear = false;
+
     // Create motor controllers of specified template type
     if ( motor1 != 0 ) {
         m_motors.push_back( new T( motor1 ) );
@@ -52,6 +54,8 @@ GearBox<T>::GearBox( unsigned int shifterChan , unsigned int encA ,
 
     if ( m_havePID ) {
         m_encoder->SetPIDSourceParameter( Encoder::kDistance );
+
+        m_pid->SetPercentTolerance( 5.f );
 
         m_encoder->Start();
         m_pid->Enable();
@@ -250,7 +254,7 @@ void GearBox<T>::updateGear()
             m_shifter->Set( m_targetGear );
 
         }
-        
+
 }
 
 template <class T>

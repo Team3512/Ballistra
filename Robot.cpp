@@ -29,6 +29,8 @@ Robot::Robot() :
     pidGraph.resetTime();
     pidGraph.setSendInterval( 200 );
 
+    insight = Insight::getInstance( atoi( settings.getValueFor( "Insight_Port" ).c_str() ) );
+
     logger1 = new Logger ();
     ls = new LogStream(logger1);
     logFileSink = new LogFileSink("LogFile.txt");
@@ -254,6 +256,8 @@ void Robot::DS_PrintOut() {
     }
 
     driverStation->receiveFromDS();
+
+    insight->receiveFromDS();
 }
 
 START_ROBOT_CLASS(Robot);

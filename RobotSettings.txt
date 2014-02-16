@@ -1,4 +1,5 @@
 DS_Port = 1130
+Insight_Port = 1132
 
 PID_DRIVE_P = 0.12
 PID_DRIVE_I = 0

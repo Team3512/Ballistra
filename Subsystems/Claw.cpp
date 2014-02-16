@@ -165,9 +165,10 @@ void Claw::Update() {
 
 	}
 
-    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Distance:  %f", m_clawRotator->getDistance());
-    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "Rate:  %f", m_clawRotator->getRate());
-    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3, "Limit:  %u", m_zeroSwitch->Get());
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Angle: %f", m_clawRotator->getDistance());
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "A Setpt: %f", GetTargetAngle());
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3, "Limit On: %u", !m_zeroSwitch->Get());
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line4, "OnTarget: %u", static_cast<unsigned int>(m_clawRotator->onTarget()));
     DriverStationLCD::GetInstance()->UpdateLCD();
 
 }

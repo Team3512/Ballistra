@@ -20,7 +20,7 @@ void Robot::RightLeftAuton() {
 	robotDrive->resetEncoders();
 	timer->Start();
 	bool state = checkReflectiveStrips();
-	claw->SetAngle(175);
+	claw->SetAngle(100);
 	while ((robotDrive->getRightDist())*-1<targetDistance && IsEnabled()){
 		targetValue = ((targetDistance - (robotDrive->getRightDist()*-1))/targetDistance)*-1;
 		std::cout << "right distance: " << (robotDrive->getRightDist())*-1 << std::endl;
