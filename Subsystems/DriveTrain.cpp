@@ -56,9 +56,11 @@ void DriveTrain::drive( float throttle, float turn, bool isQuickTurn ) {
     throttle = limit( throttle , 1.f );
     turn = limit( turn , 1.f );
 
-    // Apply joystick deadband
+    /* Apply joystick deadband
+     * (Negate turn since joystick X-axis is reversed)
+     */
     throttle = applyDeadband( throttle );
-    turn = applyDeadband( turn );
+    turn = -applyDeadband( turn );
 
     double negInertia = turn - m_oldTurn;
     m_oldTurn = turn;
@@ -133,8 +135,8 @@ void DriveTrain::drive( float throttle, float turn, bool isQuickTurn ) {
     }
 
     // Adjust straight path for turn
-    leftPwm -= angularPower;
-    rightPwm += angularPower;
+    leftPwm += angularPower;
+    rightPwm -= angularPower;
 
     // Limit PWM bounds to [-1..1]
     if ( leftPwm > 1.0 ) {
