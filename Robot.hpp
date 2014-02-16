@@ -39,7 +39,7 @@ public:
     bool testCompressor();
     void calibrateTalons();
 
-    void RightLeftAuton();
+    //void RightLeftAuton();
     void AutonMotionProfile();
 
     bool checkReflectiveStrips();
@@ -55,7 +55,6 @@ private:
     Joystick *driveStick1;
     Joystick *driveStick2;
     Joystick *shootStick;
-    DigitalInput *limitSwitch;
 
     ButtonTracker drive1Buttons;
     ButtonTracker drive2Buttons;

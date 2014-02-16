@@ -253,3 +253,18 @@ void GearBox<T>::updateGear()
         }
         
 }
+
+template <class T>
+bool GearBox<T>::onTarget()
+{
+    return m_pid->OnTarget();
+
+}
+
+template <class T>
+void GearBox<T>::resetPID()
+{
+    m_pid->Reset();
+    m_pid->Enable();
+
+}

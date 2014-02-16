@@ -81,6 +81,10 @@ public:
     //updates the gear to targetState if it is safe todo so.
     void updateGear();
 
+    bool onTarget();
+
+    void resetPID();
+
 private:
     Encoder* m_encoder;
     PIDController* m_pid;

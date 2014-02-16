@@ -8,7 +8,7 @@ Robot::Robot() :
         shootButtons( 3 ),
         pidGraph( 3513 ) {
     robotDrive = new DriveTrain();
-    claw = new Claw( 7 , 8 );
+    claw = new Claw( 7 , 8, 2);
 
     driveStick1 = new Joystick (1);
     driveStick2 = new Joystick (2);
@@ -17,14 +17,13 @@ Robot::Robot() :
     mainCompressor = new Compressor (1,1);
     autonTimer = new Timer ();
     displayTimer = new Timer ();
-    limitSwitch = new DigitalInput(2);
 
     kinect = new RobotKinect();
     //robotPosition = new RobotPosition(1,2,3,4);
 
     driverStation = DriverStationDisplay<Robot>::getInstance( atoi( settings.getValueFor( "DS_Port" ).c_str() ) );
 
-    driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
+//    driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
     driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
 
     pidGraph.resetTime();
@@ -124,14 +123,14 @@ void Robot::OperatorControl() {
 
         if(shootButtons.pressedButton(7))
         {
-        	std::cout << "setpoint: 150\n";
-        	claw->SetAngle(150);
+        	std::cout << "setpoint: 170\n";
+        	claw->SetAngle(175);
 
         }
         else if(shootButtons.pressedButton(9))
         {
         	std::cout << "setpoint: 100\n";
-        	claw->SetAngle(100);
+        	claw->SetAngle(90);
 
         }
         else if(shootButtons.pressedButton(11))
@@ -140,10 +139,15 @@ void Robot::OperatorControl() {
         	claw->SetAngle(0);
 
         }
-
-        if (!limitSwitch->Get())
+        else if(shootButtons.pressedButton(10))
         {
-        	claw->ResetEncoders();
+        	claw->SetAngle(claw->GetTargetAngle()+3.0f);
+
+        }
+        else if(shootButtons.pressedButton(12))
+        {
+        	claw->SetAngle(claw->GetTargetAngle()-3.0f);
+
         }
 
         claw->Update();
@@ -230,7 +234,7 @@ void Robot::DS_PrintOut() {
         pidGraph.graphData( robotDrive->getLeftDist() , "Left PID" );
         pidGraph.graphData( robotDrive->getLeftSetpoint() , "Left Setpoint" );
      	pidGraph.graphData(claw->GetTargetAngle(),"Target Angle");
-     	pidGraph.graphData(claw->getDistance(), "Angle");
+     	pidGraph.graphData(claw->GetAngle(), "Angle");
 
         pidGraph.resetInterval();
     }

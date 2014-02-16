@@ -7,6 +7,7 @@
 #include <Talon.h>
 #include <Timer.h>
 #include <DriverStationLCD.h>
+#include <DigitalInput.h>
 
 #include "../Settings.hpp"
 #include "GearBox.hpp"
@@ -15,7 +16,7 @@ class Solenoid;
 
 class Claw {
 public:
-    Claw (float clawRotatePort,float clawWheelPort);
+    Claw (unsigned int clawRotatePort, unsigned int clawWheelPort, unsigned int zeroSwitchPort);
     ~Claw();
 
     // Set mode of collector
@@ -38,7 +39,7 @@ public:
 
     double GetWheelSetpoint() const;
 
-    double getDistance();
+    double GetAngle();
 
     // Set encoder distances to 0
     void ResetEncoders();
@@ -69,10 +70,15 @@ private:
     GearBox<Talon>* m_clawRotator;
     GearBox<Talon>* m_intakeWheel;
 
+    //resets the encoder in m_clawRotator to 0
+    DigitalInput* m_zeroSwitch;
+
     Timer m_shootTimer;
     Timer vacuumTimer;
     bool m_isShooting;
     bool m_isVacuuming;
+
+    float m_setpoint;
 
     std::vector<Solenoid*> m_ballShooter;
     Solenoid *vacuum;
