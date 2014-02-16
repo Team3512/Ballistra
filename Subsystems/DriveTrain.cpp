@@ -133,8 +133,8 @@ void DriveTrain::drive( float throttle, float turn, bool isQuickTurn ) {
     }
 
     // Adjust straight path for turn
-    leftPwm += angularPower;
-    rightPwm -= angularPower;
+    leftPwm -= angularPower;
+    rightPwm += angularPower;
 
     // Limit PWM bounds to [-1..1]
     if ( leftPwm > 1.0 ) {
