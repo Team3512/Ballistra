@@ -23,7 +23,7 @@ Robot::Robot() :
 
     driverStation = DriverStationDisplay<Robot>::getInstance( atoi( settings.getValueFor( "DS_Port" ).c_str() ) );
 
-//    driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
+    driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
     driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
 
     pidGraph.resetTime();
