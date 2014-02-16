@@ -19,6 +19,7 @@
 
 #include "DriverStationDisplay.hpp"
 #include "LiveGrapherHost/GraphHost.hpp"
+#include "Insight.hpp"
 
 #include "Logging/Logger.h"
 #include "Logging/LogConsoleSink.h"
@@ -41,8 +42,6 @@ public:
 
     void RightLeftAuton();
     void AutonMotionProfile();
-
-    bool checkReflectiveStrips();
 
     void DS_PrintOut();
 
@@ -73,6 +72,8 @@ private:
 
     // The LiveGrapher host
     GraphHost pidGraph;
+
+    Insight *insight;
 
     Logger *logger1;
     LogFileSink *logFileSink;

@@ -7,11 +7,6 @@
 #include "../Robot.hpp"
 #include <Timer.h>
 
-bool Robot::checkReflectiveStrips() {
-
-	return false;
-}
-
 void Robot::RightLeftAuton() {
 	float targetValue;
 	const float targetDistance = 335.0;
@@ -19,9 +14,22 @@ void Robot::RightLeftAuton() {
 	timer->Reset();
 	robotDrive->resetEncoders();
 	timer->Start();
-	bool state = checkReflectiveStrips();
+        bool gotData = false;
+        bool state = false;
 	claw->SetAngle(100);
 	while ((robotDrive->getRightDist())*-1<targetDistance && IsEnabled()){
+                if ( !gotData ) {
+                    insight->receiveFromDS();
+
+                    if ( insight->hasNewData() ) {
+                        if ( insight->getNumTargets() != 0 ) {
+                            state = true;
+                        }
+                        else {
+                            state = false;
+                        }
+                    }
+                }
 		targetValue = ((targetDistance - (robotDrive->getRightDist()*-1))/targetDistance)*-1;
 		std::cout << "right distance: " << (robotDrive->getRightDist())*-1 << std::endl;
 		std::cout << "left distance: " << (robotDrive->getLeftDist())*-1 << std::endl;
