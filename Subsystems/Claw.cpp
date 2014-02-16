@@ -1,46 +1,71 @@
 #include "Claw.hpp"
 
+#ifndef M_PI
+#define M_PI 3.14159265
+#endif
+
 #include <Solenoid.h>
 #include <DriverStationLCD.h>
 
-Claw::Claw(float clawRotatePort,float clawWheelPort) :
-        m_settings( "RobotSettings.txt" ),
-        m_isShooting( false ) {
-    m_clawRotator = new GearBox<Talon>( 0 , 6 , 7 , clawRotatePort );
+Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort, unsigned int zeroSwitchPort) :
+        m_settings( "RobotSettings.txt" )
+        {
+    m_clawRotator = new GearBox<Talon>( 0 , 7 , 8 , clawRotatePort );
     m_intakeWheel = new GearBox<Talon>( 0 , 0 , 0 , clawWheelPort );
 
     // Sets degrees rotated per pulse of encoder
-    m_clawRotator->setDistancePerPulse( 1.0/71.0f );
+    m_clawRotator->setDistancePerPulse( (1.0/71.0f)*14.0 /44.0 );
+    m_clawRotator->setReversed(true);
 
     m_ballShooter.push_back( new Solenoid( 1 ) );
     m_ballShooter.push_back( new Solenoid( 2 ) );
     m_ballShooter.push_back( new Solenoid( 3 ) );
     m_ballShooter.push_back( new Solenoid( 4 ) );
-    collectorArm = new Solenoid(5);
+
+    m_zeroSwitch = new DigitalInput(zeroSwitchPort);
+
+    //magical values found using empirical testing don't change.
+    setK(0.238f);
+    m_l = 69.0f;
+
+    m_collectorArm = new Solenoid(5);
+    m_vacuum = new Solenoid (6);
+
+    ReloadPID();
+    m_shooterStates = SHOOTER_IDLE;
 }
 
 Claw::~Claw(){
     // Free solenoids
     for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
         delete m_ballShooter[i];
-        delete collectorArm;
     }
+
+    delete m_collectorArm;
+    delete m_zeroSwitch;
+    delete m_vacuum;
     m_ballShooter.clear();
 }
 
 void Claw::SetAngle(float shooterAngle){
     m_clawRotator->setSetpoint( shooterAngle );
+    m_setpoint = shooterAngle;
 }
 
 void Claw::ManualSetAngle(float value) {
-	m_clawRotator->setManual(value);
+	if((!m_zeroSwitch->Get() && value > 0) || m_zeroSwitch->Get())
+	{
+		m_clawRotator->setManual(value);
+
+	}
+
 }
 
 double Claw::GetTargetAngle() const {
     return m_clawRotator->getSetpoint();
 }
 
-double Claw::getDistance()
+double Claw::GetAngle()
 {
 	return m_clawRotator->getDistance();
 
@@ -74,52 +99,109 @@ void Claw::ReloadPID() {
 }
 
 void Claw::Shoot() {
-    if ( !m_isShooting ) {
-        for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
-            m_ballShooter[i]->Set( true );
-        }
+	if (m_shooterStates == SHOOTER_IDLE){
+		m_collectorArm->Set(true);
+		m_shooterStates = SHOOTER_ARMISLIFTING;
+		m_shootTimer.Start();
+		m_shootTimer.Reset();
+	}
 
-        m_shootTimer.Start();
-
-        m_isShooting = true;
-    }
 }
 
 void Claw::SetCollectorMode(bool collectorMode){
 	if(collectorMode == true){
-		collectorArm->Set(true);
+		m_collectorArm->Set(true);
 	}
 	else{
-		collectorArm->Set(false);
+		m_collectorArm->Set(false);
 	}
 }
 bool Claw::GetCollectorMode(){
-	return collectorArm->Get();
+	return m_collectorArm->Get();
 }
 
 void Claw::Update() {
-    if ( m_isShooting ) {
-        if ( m_shootTimer.HasPeriodPassed( 0.5 ) ) {
-            // Return bow to default position
-            for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
-                m_ballShooter[i]->Set( false );
-            }
+	if (m_shooterStates == SHOOTER_ARMISLIFTING && m_shootTimer.HasPeriodPassed(1.5)){
+		for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
+		    m_ballShooter[i]->Set( true );
+		}
+		m_shootTimer.Reset();
+		m_shooterStates = SHOOTER_SHOOTING;
+	}
+	if (m_shooterStates == SHOOTER_SHOOTING && m_shootTimer.HasPeriodPassed(2.0)){
+		for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
+		     m_ballShooter[i]->Set( false );
+		}
+		m_vacuum->Set(true);
+		m_shootTimer.Reset();
+		m_shooterStates = SHOOTER_VACUUMING;
+	}
+	if (m_shooterStates == SHOOTER_VACUUMING && m_shootTimer.HasPeriodPassed(1.5)){
+		m_vacuum->Set(false);
+		m_collectorArm->Set (false);
 
-            // Reset shoot timer
-            m_shootTimer.Stop();
-            m_shootTimer.Reset();
+		m_shootTimer.Reset();
+		m_shooterStates = SHOOTER_IDLE;
+	}
+	setF(calcF());
 
-            // Process is done, allow it to repeat
-            m_isShooting = false;
-        }
-    }
 
-    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Distance:  %f", m_clawRotator->getDistance());
-    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "Rate:  %f", m_clawRotator->getRate());
+	if(!m_zeroSwitch->Get())
+	{
+		m_clawRotator->resetPID();
+		ResetEncoders();
+
+	}
+
+	//fixes the reset not fully touching zeroSwitch because of gradual encoder error
+	if(m_zeroSwitch->Get() && GetTargetAngle() <= 0 && m_clawRotator->onTarget())
+	{
+		m_clawRotator->setSetpoint(GetTargetAngle()-0.5f);
+
+	}
+	else if(!m_zeroSwitch->Get() && GetTargetAngle() <= 0)
+	{
+		m_clawRotator->setSetpoint(0);
+
+	}
+
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Angle: %f", m_clawRotator->getDistance());
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "A Setpt: %f", GetTargetAngle());
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3, "Limit On: %u", !m_zeroSwitch->Get());
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line4, "OnTarget: %u", static_cast<unsigned int>(m_clawRotator->onTarget()));
     DriverStationLCD::GetInstance()->UpdateLCD();
 
 }
 
+void Claw::setF(float f)
+{
+	m_clawRotator->setF(f);
+
+}
+
+void Claw::setK(float k)
+{
+	m_k = k;
+
+}
+
+float Claw::calcF()
+{
+	if(GetTargetAngle() == 0)
+	{
+		return 0.0f;
+
+	}
+
+	return m_k*cos((GetAngle()+m_l)*M_PI/180.0f)/GetTargetAngle()*M_PI/180.0f;
+
+}
+
 bool Claw::IsShooting() const {
-    return m_isShooting;
+    if (m_shooterStates != SHOOTER_IDLE){
+    	return true;
+    }
+    else{
+    	return false;
+    }
 }

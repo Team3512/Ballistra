@@ -16,10 +16,10 @@
 
 #include "RobotKinect.hpp"
 #include "RobotPosition.hpp"
-#include "ADXL345_I2C_ALT.h"
 
 #include "DriverStationDisplay.hpp"
 #include "LiveGrapherHost/GraphHost.hpp"
+#include "Insight.hpp"
 
 #include "Logging/Logger.h"
 #include "Logging/LogConsoleSink.h"
@@ -40,6 +40,7 @@ public:
     bool testCompressor();
     void calibrateTalons();
 
+    void RightLeftAuton();
     void AutonMotionProfile();
 
     void DS_PrintOut();
@@ -53,7 +54,6 @@ private:
     Joystick *driveStick1;
     Joystick *driveStick2;
     Joystick *shootStick;
-    DigitalInput *limitSwitch;
 
     ButtonTracker drive1Buttons;
     ButtonTracker drive2Buttons;
@@ -66,13 +66,14 @@ private:
 
     RobotKinect *kinect;
     RobotPosition *robotPosition;
-    ADXL345_I2C_ALT *accelerometer;
 
     // Used for sending data to the Driver Station
     DriverStationDisplay<Robot>* driverStation;
 
     // The LiveGrapher host
     GraphHost pidGraph;
+
+    Insight *insight;
 
     Logger *logger1;
     LogFileSink *logFileSink;
