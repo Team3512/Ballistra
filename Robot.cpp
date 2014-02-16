@@ -99,14 +99,6 @@ void Robot::OperatorControl() {
         	claw->SetCollectorMode(!claw->GetCollectorMode());
         }
 
-        //claw->SetAngle(34);
-
-        /*float kval = (shootStick->GetTwist()+1)/2;
-        claw->ManualSetAngle(kval);//.238
-        DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3, "voltage=%f", kval);
-        DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line4, "y: ", shootStick->GetY());
-*/
-
         if (shootStick->GetRawButton(3))
         {
         	claw->SetWheelManual(-1);
@@ -123,19 +115,16 @@ void Robot::OperatorControl() {
 
         if(shootButtons.pressedButton(7))
         {
-        	std::cout << "setpoint: 170\n";
         	claw->SetAngle(175);
 
         }
         else if(shootButtons.pressedButton(9))
         {
-        	std::cout << "setpoint: 100\n";
-        	claw->SetAngle(90);
+        	claw->SetAngle(88);
 
         }
         else if(shootButtons.pressedButton(11))
         {
-        	std::cout << "setpoint: 0\n";
         	claw->SetAngle(0);
 
         }

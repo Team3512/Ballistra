@@ -121,14 +121,14 @@ bool Claw::GetCollectorMode(){
 }
 
 void Claw::Update() {
-	if (m_shooterStates == SHOOTER_ARMISLIFTING && m_shootTimer.HasPeriodPassed(0.5)){
+	if (m_shooterStates == SHOOTER_ARMISLIFTING && m_shootTimer.HasPeriodPassed(1.5)){
 		for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
 		    m_ballShooter[i]->Set( true );
 		}
 		m_shootTimer.Reset();
 		m_shooterStates = SHOOTER_SHOOTING;
 	}
-	if (m_shooterStates == SHOOTER_SHOOTING && m_shootTimer.HasPeriodPassed(1.0)){
+	if (m_shooterStates == SHOOTER_SHOOTING && m_shootTimer.HasPeriodPassed(2.0)){
 		for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
 		     m_ballShooter[i]->Set( false );
 		}
@@ -159,7 +159,7 @@ void Claw::Update() {
 		m_clawRotator->setSetpoint(GetTargetAngle()-0.5f);
 
 	}
-	else if(!m_zeroSwitch->Get() && GetTargetAngle() <= 0 && m_clawRotator->onTarget())
+	else if(!m_zeroSwitch->Get() && GetTargetAngle() <= 0)
 	{
 		m_clawRotator->setSetpoint(0);
 
@@ -167,6 +167,7 @@ void Claw::Update() {
 
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Distance:  %f", m_clawRotator->getDistance());
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "Rate:  %f", m_clawRotator->getRate());
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3, "Limit:  %u", m_zeroSwitch->Get());
     DriverStationLCD::GetInstance()->UpdateLCD();
 
 }
