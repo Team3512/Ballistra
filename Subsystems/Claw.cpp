@@ -8,8 +8,7 @@
 #include <DriverStationLCD.h>
 
 Claw::Claw(float clawRotatePort,float clawWheelPort) :
-        m_settings( "RobotSettings.txt" ),
-        m_isShooting( false ) {
+        m_settings( "RobotSettings.txt" ) {
     m_clawRotator = new GearBox<Talon>( 0 , 7 , 8 , clawRotatePort );
     m_intakeWheel = new GearBox<Talon>( 0 , 0 , 0 , clawWheelPort );
 
@@ -23,18 +22,18 @@ Claw::Claw(float clawRotatePort,float clawWheelPort) :
     m_ballShooter.push_back( new Solenoid( 2 ) );
     m_ballShooter.push_back( new Solenoid( 3 ) );
     m_ballShooter.push_back( new Solenoid( 4 ) );
-    collectorArm = new Solenoid(5);
-    vacuum = new Solenoid (6);
-    m_isVacuuming = false;
+    m_collectorArm = new Solenoid(5);
+    m_vacuum = new Solenoid (6);
     m_l = 69.0f;
-
+    ReloadPID();
+    m_shooterStates = SHOOTER_IDLE;
 }
 
 Claw::~Claw(){
     // Free solenoids
     for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
         delete m_ballShooter[i];
-        delete collectorArm;
+        delete m_collectorArm;
     }
     m_ballShooter.clear();
 }
@@ -85,60 +84,50 @@ void Claw::ReloadPID() {
 }
 
 void Claw::Shoot() {
-    if ( !m_isShooting ) {
-        for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
-            m_ballShooter[i]->Set( true );
-        }
+	if (m_shooterStates == SHOOTER_IDLE){
+		m_collectorArm->Set(true);
+		m_shooterStates = SHOOTER_ARMISLIFTING;
+		m_shootTimer.Start();
+		m_shootTimer.Reset();
+	}
 
-        m_shootTimer.Start();
-
-        m_isShooting = true;
-    }
 }
 
 void Claw::SetCollectorMode(bool collectorMode){
 	if(collectorMode == true){
-		collectorArm->Set(true);
+		m_collectorArm->Set(true);
 	}
 	else{
-		collectorArm->Set(false);
+		m_collectorArm->Set(false);
 	}
 }
 bool Claw::GetCollectorMode(){
-	return collectorArm->Get();
+	return m_collectorArm->Get();
 }
 
 void Claw::Update() {
-    if ( m_isShooting ) {
-        if ( m_shootTimer.HasPeriodPassed( 1.0 ) ) {
-            // Return bow to default position
-            for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
-                m_ballShooter[i]->Set( false );
-            }
-            collectorArm->Set(false);
-            // Engage vacuum
-            m_isVacuuming = true;
-            vacuum->Set(true);
-            vacuumTimer.Start();
+	if (m_shooterStates == SHOOTER_ARMISLIFTING && m_shootTimer.HasPeriodPassed(0.5)){
+		for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
+		    m_ballShooter[i]->Set( true );
+		}
+		m_shootTimer.Reset();
+		m_shooterStates = SHOOTER_SHOOTING;
+	}
+	if (m_shooterStates == SHOOTER_SHOOTING && m_shootTimer.HasPeriodPassed(1.0)){
+		for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
+		     m_ballShooter[i]->Set( false );
+		}
+		m_vacuum->Set(true);
+		m_shootTimer.Reset();
+		m_shooterStates = SHOOTER_VACUUMING;
+	}
+	if (m_shooterStates == SHOOTER_VACUUMING && m_shootTimer.HasPeriodPassed(1.5)){
+		m_vacuum->Set(false);
+		m_collectorArm->Set (false);
 
-            // Reset shoot timer
-            m_shootTimer.Stop();
-            m_shootTimer.Reset();
-
-            // Process is done, allow it to repeat
-            m_isShooting = false;
-        }
-    }
-    if (m_isVacuuming){
-        if (vacuumTimer.HasPeriodPassed(1.5)){
-        	vacuum->Set(false);
-        	m_isVacuuming = false;
-
-        	vacuumTimer.Stop();
-        	vacuumTimer.Reset();
-        }
-    }
-
+		m_shootTimer.Reset();
+		m_shooterStates = SHOOTER_IDLE;
+	}
 	setF(calcF());
 
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Distance:  %f", m_clawRotator->getDistance());
@@ -172,5 +161,10 @@ float Claw::calcF()
 }
 
 bool Claw::IsShooting() const {
-    return m_isShooting;
+    if (m_shooterStates != SHOOTER_IDLE){
+    	return true;
+    }
+    else{
+    	return false;
+    }
 }

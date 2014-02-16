@@ -125,7 +125,7 @@ void Robot::OperatorControl() {
         if(shootButtons.pressedButton(7))
         {
         	std::cout << "setpoint: 150\n";
-        	claw->SetAngle(170);
+        	claw->SetAngle(160);
 
         }
         else if(shootButtons.pressedButton(9))

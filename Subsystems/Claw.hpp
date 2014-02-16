@@ -60,6 +60,12 @@ public:
     void setF(float f);
 
     float calcF();
+    typedef enum ShooterStates {
+    	SHOOTER_IDLE,
+    	SHOOTER_SHOOTING,
+    	SHOOTER_VACUUMING,
+    	SHOOTER_ARMISLIFTING
+    } ShooterStates;
 
 private:
     Settings m_settings;
@@ -70,13 +76,11 @@ private:
     GearBox<Talon>* m_intakeWheel;
 
     Timer m_shootTimer;
-    Timer vacuumTimer;
-    bool m_isShooting;
-    bool m_isVacuuming;
+    ShooterStates m_shooterStates;
 
     std::vector<Solenoid*> m_ballShooter;
-    Solenoid *vacuum;
-    Solenoid *collectorArm;
+    Solenoid *m_vacuum;
+    Solenoid *m_collectorArm;
 
 };
 

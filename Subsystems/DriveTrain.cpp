@@ -26,8 +26,8 @@ DriveTrain::DriveTrain() :
 
     // c = PI * 10.16cm [wheel diameter]
     // dPerP = c / pulses
-    m_leftGrbx->setDistancePerPulse( 3.14159265 * 10.16 / 360.0 );
-    m_rightGrbx->setDistancePerPulse( 3.14159265 * 10.16 / 360.0 );
+    m_leftGrbx->setDistancePerPulse( ((3.14159265 * 10.16 )/ 360.0 )* 1.0/3.0);
+    m_rightGrbx->setDistancePerPulse( ((3.14159265 * 10.16 )/ 360.0 )* 1.0/3.0);
 
     reloadPID();
 }
