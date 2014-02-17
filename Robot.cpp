@@ -75,8 +75,9 @@ void Robot::calibrateTalons() {
 }
 void Robot::OperatorControl() {
     mainCompressor->Start();
-    claw->ManualSetAngle(0);
+    robotDrive->reloadPID();
     //robotPosition->zeroValues();
+
     while (IsOperatorControl() && IsEnabled()){
         //Kinect Drive
         //robotDrive->setLeftManual( kinect->GetArmScale().second );

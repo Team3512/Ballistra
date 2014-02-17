@@ -154,19 +154,25 @@ void Claw::Update() {
 
 	setF(calcF());
 
+	// Spins intake wheel to keep ball in while rotating claw at high speeds
+	if ( fabs(m_clawRotator->getRate()) > 35.f ) {
+	        SetWheelManual( -(fabs(m_clawRotator->getRate()) / 175.f) );
+	}
+
 	/* Fixes arm, when at reset angle, not touching zeroSwitch due to gradual
 	 * encoder error. If limit switch isn't pressed but arm is supposedly at
 	 * zeroing point or farther:
 	 */
 	if ( m_zeroSwitch->Get() && GetTargetAngle() <= 1.f &&
             m_clawRotator->onTarget() ) {
-        m_clawRotator->setSetpoint( GetTargetAngle() - 10.f );
+        m_clawRotator->setSetpoint( GetTargetAngle() - 5.f );
     }
 
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Angle: %f", m_clawRotator->getDistance());
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "A Setpt: %f", GetTargetAngle());
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3, "Limit On: %u", !m_zeroSwitch->Get());
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line4, "OnTarget: %u", static_cast<unsigned int>(m_clawRotator->onTarget()));
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line5, "A Rate: %f", m_clawRotator->getRate());
     DriverStationLCD::GetInstance()->UpdateLCD();
 
 }

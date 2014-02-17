@@ -15,10 +15,9 @@ void Robot::AutonMotionProfile() {
 
     claw->SetAngle( 88.f );
 
-    // Move robot 1 meter forward
+    // Move robot 360 cm forward
     robotDrive->resetTime();
-    // 360
-    robotDrive->setGoal( 30 , robotDrive->getLeftDist() , autonTimer->Get() );
+    robotDrive->setGoal( 60 , robotDrive->getLeftDist() , autonTimer->Get() );
     double setpoint = 0.0;
     while ( IsAutonomous() && IsEnabled() && !robotDrive->atGoal() ) {
         DS_PrintOut();
