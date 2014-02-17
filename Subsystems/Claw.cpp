@@ -7,7 +7,8 @@
 #include <Solenoid.h>
 #include <DriverStationLCD.h>
 
-Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort, unsigned int zeroSwitchPort) :
+Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort,
+        unsigned int zeroSwitchPort, unsigned int haveBallPort) :
         m_settings( "RobotSettings.txt" )
         {
     m_clawRotator = new GearBox<Talon>( 0 , 7 , 8 , clawRotatePort );
@@ -23,11 +24,17 @@ Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort, unsigned int
     m_ballShooter.push_back( new Solenoid( 4 ) );
 
     m_zeroSwitch = new DigitalInput(zeroSwitchPort);
+    m_haveBallSwitch = new DigitalInput(haveBallPort);
 
     // Set up interrupt for encoder reset
     m_zeroSwitch->RequestInterrupts( Claw::ResetClawEncoder , this );
     m_zeroSwitch->SetUpSourceEdge( true , true );
     m_zeroSwitch->EnableInterrupts();
+
+    // Set up interrupt for catching ball
+    m_haveBallSwitch->RequestInterrupts( Claw::CloseClaw , this );
+    m_haveBallSwitch->SetUpSourceEdge( false , true );
+    //m_haveBallSwitch->EnableInterrupts();
 
     //magical values found using empirical testing don't change.
     setK(0.238f);
@@ -50,6 +57,9 @@ Claw::~Claw(){
 
     m_zeroSwitch->DisableInterrupts();
     delete m_zeroSwitch;
+
+    m_haveBallSwitch->DisableInterrupts();
+    delete m_haveBallSwitch;
 
     delete m_vacuum;
     m_ballShooter.clear();
@@ -117,12 +127,7 @@ void Claw::Shoot() {
 }
 
 void Claw::SetCollectorMode(bool collectorMode){
-	if(collectorMode == true){
-		m_collectorArm->Set(true);
-	}
-	else{
-		m_collectorArm->Set(false);
-	}
+    m_collectorArm->Set(collectorMode);
 }
 bool Claw::GetCollectorMode(){
 	return m_collectorArm->Get();
@@ -217,8 +222,17 @@ void Claw::ResetClawEncoder( long unsigned int interruptAssertedMask, void* obj 
     Claw* claw = static_cast<Claw*>(obj);
 
     if ( claw->GetTargetAngle() <= 0.0 ) {
-        static_cast<Claw*>(obj)->m_clawRotator->resetPID();
-        static_cast<Claw*>(obj)->m_clawRotator->resetEncoder();
-        static_cast<Claw*>(obj)->m_clawRotator->setSetpoint( 0.f );
+        claw->m_clawRotator->resetPID();
+        claw->m_clawRotator->resetEncoder();
+        claw->m_clawRotator->setSetpoint( 0.f );
+    }
+}
+
+void Claw::CloseClaw( long unsigned int interruptAssertedMask, void* obj ) {
+    std::cout << "CloseClaw INTERRUPT\n";
+    Claw* claw = static_cast<Claw*>(obj);
+
+    if ( !claw->IsShooting() ) {
+        claw->SetCollectorMode( false );
     }
 }
