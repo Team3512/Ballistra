@@ -262,11 +262,10 @@ bool GearBox<T>::onTarget()
     if(!m_havePID)
     {
         return false;
-        
-    }
-        
-    return getDistance() <= getSetpoint()*(1+m_pid->GetTolerance()) && getDistance() >= getSetpoint()*(1-m_pid->GetTolerance()) && fabs(m_pid->GetDeltaError()) <= m_pid->GetTolerance();
 
+    }
+
+    return fabs(m_pid->GetError()/100.f) <= m_pid->GetTolerance() && fabs(m_pid->GetDeltaError()) <= m_pid->GetTolerance();
 }
 
 template <class T>

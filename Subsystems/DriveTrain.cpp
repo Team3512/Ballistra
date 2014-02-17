@@ -15,10 +15,10 @@
 #define M_PI 3.14159265
 #endif
 
-const float DriveTrain::maxWheelSpeed = 150.f;
+const float DriveTrain::maxWheelSpeed = 274.f;
 
 DriveTrain::DriveTrain() :
-            TrapezoidProfile( maxWheelSpeed , 5.f ),
+            TrapezoidProfile( maxWheelSpeed , 3.f ),
             m_settings( "RobotSettings.txt" ) {
     m_settings.update();
 
@@ -32,9 +32,9 @@ DriveTrain::DriveTrain() :
     m_negInertiaAccumulator = 0.f;
 
     m_leftGrbx = new GearBox<Talon>( 7 , 5, 6 , 1 , 2, 3 );
-    m_leftGrbx->setReversed( true );
 
     m_rightGrbx = new GearBox<Talon>( 0 , 3 , 4 , 4 , 5, 6 );
+    m_rightGrbx->setReversed( true );
 
     // c = PI * 10.16cm [wheel diameter]
     // dPerP = c / pulses
@@ -59,7 +59,7 @@ void DriveTrain::drive( float throttle, float turn, bool isQuickTurn ) {
     /* Apply joystick deadband
      * (Negate turn since joystick X-axis is reversed)
      */
-    throttle = applyDeadband( throttle );
+    throttle = -applyDeadband( throttle );
     turn = -applyDeadband( turn );
 
     double negInertia = turn - m_oldTurn;
@@ -80,18 +80,18 @@ void DriveTrain::drive( float throttle, float turn, bool isQuickTurn ) {
     // Negative inertia!
     double negInertiaScalar;
     if ( getGear() ) {
-        negInertiaScalar = 5.0;
+        negInertiaScalar = atof( m_settings.getValueFor( "INERTIA_HIGH_GEAR" ).c_str() );
     }
     else {
         if ( turn * negInertia > 0 ) {
-            negInertiaScalar = 2.5;
+            negInertiaScalar = atof( m_settings.getValueFor( "INERTIA_LOW_DAMPEN" ).c_str() );
         }
         else {
             if ( fabs(turn) > 0.65 ) {
-                negInertiaScalar = 5.0;
+                negInertiaScalar = atof( m_settings.getValueFor( "INERTIA_LOW_HIGH_TURN" ).c_str() );
             }
             else {
-                negInertiaScalar = 3.0;
+                negInertiaScalar = atof( m_settings.getValueFor( "INERTIA_LOW_LOW_TURN" ).c_str() );
             }
         }
     }

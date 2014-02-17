@@ -151,25 +151,28 @@ void Claw::Update() {
 		m_shootTimer.Reset();
 		m_shooterStates = SHOOTER_IDLE;
 	}
+
 	setF(calcF());
 
-
-	//fixes the reset not fully touching zeroSwitch because of gradual encoder error
-	if(m_zeroSwitch->Get() && GetTargetAngle() <= 0 && m_clawRotator->onTarget())
-	{
-		m_clawRotator->setSetpoint(GetTargetAngle()-0.5f);
-
+	// Spins intake wheel to keep ball in while rotating claw at high speeds
+	if ( fabs(m_clawRotator->getRate()) > 35.f ) {
+	        SetWheelManual( -(fabs(m_clawRotator->getRate()) / 175.f) );
 	}
-	else if(!m_zeroSwitch->Get() && GetTargetAngle() <= 0)
-	{
-		m_clawRotator->setSetpoint(0);
 
-	}
+	/* Fixes arm, when at reset angle, not touching zeroSwitch due to gradual
+	 * encoder error. If limit switch isn't pressed but arm is supposedly at
+	 * zeroing point or farther:
+	 */
+	if ( m_zeroSwitch->Get() && GetTargetAngle() <= 1.f &&
+            m_clawRotator->onTarget() ) {
+        m_clawRotator->setSetpoint( GetTargetAngle() - 5.f );
+    }
 
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Angle: %f", m_clawRotator->getDistance());
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "A Setpt: %f", GetTargetAngle());
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3, "Limit On: %u", !m_zeroSwitch->Get());
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line4, "OnTarget: %u", static_cast<unsigned int>(m_clawRotator->onTarget()));
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line5, "A Rate: %f", m_clawRotator->getRate());
     DriverStationLCD::GetInstance()->UpdateLCD();
 
 }
@@ -208,6 +211,11 @@ bool Claw::IsShooting() const {
 }
 
 void Claw::ResetClawEncoder( long unsigned int interruptAssertedMask, void* obj ) {
-    static_cast<Claw*>(obj)->m_clawRotator->resetPID();
-    static_cast<Claw*>(obj)->m_clawRotator->resetEncoder();
+    Claw* claw = static_cast<Claw*>(obj);
+
+    if ( claw->GetTargetAngle() <= 0.0 ) {
+        static_cast<Claw*>(obj)->m_clawRotator->resetPID();
+        static_cast<Claw*>(obj)->m_clawRotator->resetEncoder();
+        static_cast<Claw*>(obj)->m_clawRotator->setSetpoint( 0.f );
+    }
 }

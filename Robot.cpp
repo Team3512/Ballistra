@@ -75,8 +75,9 @@ void Robot::calibrateTalons() {
 }
 void Robot::OperatorControl() {
     mainCompressor->Start();
-    claw->ManualSetAngle(0);
+    robotDrive->reloadPID();
     //robotPosition->zeroValues();
+
     while (IsOperatorControl() && IsEnabled()){
         //Kinect Drive
         //robotDrive->setLeftManual( kinect->GetArmScale().second );
@@ -132,6 +133,8 @@ void Robot::OperatorControl() {
         }
         else if(shootButtons.pressedButton(11))
         {
+            // Collector should always be retracted when resetting encoder
+            claw->SetCollectorMode( false );
         	claw->SetAngle(0);
 
         }
