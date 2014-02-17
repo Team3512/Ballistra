@@ -88,6 +88,10 @@ private:
     Solenoid *m_vacuum;
     Solenoid *m_collectorArm;
 
+    /* Used for claw rotation encoder interrupt
+     * 'void* obj' should be a pointer to an instance of this class
+     */
+    static void ResetClawEncoder( long unsigned int interruptAssertedMask, void* obj );
 };
 
 #endif // CLAW_HPP
