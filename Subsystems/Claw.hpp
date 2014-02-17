@@ -7,6 +7,7 @@
 #include <Talon.h>
 #include <Timer.h>
 #include <DriverStationLCD.h>
+#include <DigitalInput.h>
 
 #include "../Settings.hpp"
 #include "GearBox.hpp"
@@ -15,7 +16,7 @@ class Solenoid;
 
 class Claw {
 public:
-    Claw (float clawRotatePort,float clawWheelPort);
+    Claw (unsigned int clawRotatePort, unsigned int clawWheelPort, unsigned int zeroSwitchPort);
     ~Claw();
 
     // Set mode of collector
@@ -38,7 +39,7 @@ public:
 
     double GetWheelSetpoint() const;
 
-    double getDistance();
+    double GetAngle();
 
     // Set encoder distances to 0
     void ResetEncoders();
@@ -55,21 +56,42 @@ public:
     // Returns true if this instance is in the middle of shooting
     bool IsShooting() const;
 
+    void setK(float k);
+
+    void setF(float f);
+
+    float calcF();
+    typedef enum ShooterStates {
+    	SHOOTER_IDLE,
+    	SHOOTER_SHOOTING,
+    	SHOOTER_VACUUMING,
+    	SHOOTER_ARMISLIFTING
+    } ShooterStates;
+
 private:
     Settings m_settings;
+    float m_k;
+    float m_l;
 
     GearBox<Talon>* m_clawRotator;
     GearBox<Talon>* m_intakeWheel;
 
+    //resets the encoder in m_clawRotator to 0
+    DigitalInput* m_zeroSwitch;
+
     Timer m_shootTimer;
-    Timer vacuumTimer;
-    bool m_isShooting;
-    bool m_isVacuuming;
+    ShooterStates m_shooterStates;
+
+    float m_setpoint;
 
     std::vector<Solenoid*> m_ballShooter;
-    Solenoid *vacuum;
-    Solenoid *collectorArm;
+    Solenoid *m_vacuum;
+    Solenoid *m_collectorArm;
 
+    /* Used for claw rotation encoder interrupt
+     * 'void* obj' should be a pointer to an instance of this class
+     */
+    static void ResetClawEncoder( long unsigned int interruptAssertedMask, void* obj );
 };
 
 #endif // CLAW_HPP

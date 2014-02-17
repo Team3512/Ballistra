@@ -10,6 +10,7 @@
 #include <vector>
 #include <PIDOutput.h>
 #include <PIDSource.h>
+#include <iostream>
 
 class Encoder;
 class PIDController;
@@ -71,7 +72,7 @@ public:
     // Shifts gearbox to another gear if available
     void setGear( bool gear );
 
-    // Gets current gearbox gear if available (false if no)
+    // Gets current gearbox gear if available (false if not)
     bool getGear() const;
 
     // Sets motor speed to 'output'
@@ -79,6 +80,10 @@ public:
 
     //updates the gear to targetState if it is safe todo so.
     void updateGear();
+
+    bool onTarget();
+
+    void resetPID();
 
 private:
     Encoder* m_encoder;

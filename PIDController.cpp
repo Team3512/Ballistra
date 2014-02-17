@@ -93,6 +93,12 @@ void PIDController::Initialize(float Kp, float Ki, float Kd, float Kf,
     m_toleranceType = kNoTolerance;
 }
 
+float PIDController::GetTolerance()
+{
+	return m_tolerance;
+
+}
+
 /**
  * Free the PID object
  */
@@ -485,6 +491,12 @@ bool PIDController::OnTarget()
      * must be settled).
      */
     return temp && deltaError < 0.05;
+}
+
+float PIDController::GetDeltaError()
+{
+	return m_deltaError;
+
 }
 
 /**
