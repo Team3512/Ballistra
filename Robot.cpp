@@ -29,6 +29,8 @@ Robot::Robot() :
     pidGraph.resetTime();
     pidGraph.setSendInterval( 200 );
 
+    insight = Insight::getInstance( atoi( settings.getValueFor( "Insight_Port" ).c_str() ) );
+
     logger1 = new Logger ();
     ls = new LogStream(logger1);
     logFileSink = new LogFileSink("LogFile.txt");
@@ -83,7 +85,12 @@ void Robot::OperatorControl() {
     	DS_PrintOut();
 
         //arcade Drive
-        robotDrive->drive( driveStick1->GetY() , driveStick2->GetZ(), 0.917 , 1);
+        if ( driveStick2->GetRawButton( 2 ) ) {
+            robotDrive->drive( driveStick1->GetY() , driveStick2->GetZ(), true );
+        }
+        else {
+            robotDrive->drive( driveStick1->GetY() , driveStick2->GetZ() );
+        }
 
         if ( drive1Buttons.releasedButton( 1 ) ) {
             robotDrive->setGear( !robotDrive->getGear() );
@@ -98,14 +105,6 @@ void Robot::OperatorControl() {
         if( shootButtons.releasedButton(2)) {
         	claw->SetCollectorMode(!claw->GetCollectorMode());
         }
-
-        //claw->SetAngle(34);
-
-        /*float kval = (shootStick->GetTwist()+1)/2;
-        claw->ManualSetAngle(kval);//.238
-        DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3, "voltage=%f", kval);
-        DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line4, "y: ", shootStick->GetY());
-*/
 
         if (shootStick->GetRawButton(3))
         {
@@ -123,19 +122,16 @@ void Robot::OperatorControl() {
 
         if(shootButtons.pressedButton(7))
         {
-        	std::cout << "setpoint: 170\n";
         	claw->SetAngle(175);
 
         }
         else if(shootButtons.pressedButton(9))
         {
-        	std::cout << "setpoint: 100\n";
-        	claw->SetAngle(90);
+        	claw->SetAngle(103);
 
         }
         else if(shootButtons.pressedButton(11))
         {
-        	std::cout << "setpoint: 0\n";
         	claw->SetAngle(0);
 
         }
@@ -265,6 +261,8 @@ void Robot::DS_PrintOut() {
     }
 
     driverStation->receiveFromDS();
+
+    insight->receiveFromDS();
 }
 
 START_ROBOT_CLASS(Robot);
