@@ -154,13 +154,6 @@ void Claw::Update() {
 	setF(calcF());
 
 
-	if(!m_zeroSwitch->Get())
-	{
-		m_clawRotator->resetPID();
-		ResetEncoders();
-
-	}
-
 	//fixes the reset not fully touching zeroSwitch because of gradual encoder error
 	if(m_zeroSwitch->Get() && GetTargetAngle() <= 0 && m_clawRotator->onTarget())
 	{
@@ -215,5 +208,6 @@ bool Claw::IsShooting() const {
 }
 
 void Claw::ResetClawEncoder( long unsigned int interruptAssertedMask, void* obj ) {
+    static_cast<Claw*>(obj)->m_clawRotator->resetPID();
     static_cast<Claw*>(obj)->m_clawRotator->resetEncoder();
 }
