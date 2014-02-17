@@ -14,13 +14,13 @@ bool Robot::checkReflectiveStrips() {
 
 void Robot::RightLeftAuton() {
 	float targetValue;
-	const float targetDistance = 360.0;
+	const float targetDistance = 370.0;
 	Timer *timer = new Timer;
 	timer->Reset();
 	robotDrive->resetEncoders();
 	timer->Start();
 	bool state = checkReflectiveStrips();
-	claw->SetAngle(88.0);
+	claw->SetAngle(103.0 - 37.0);
 	Wait (0.5);
 	while ((robotDrive->getRightDist())<targetDistance && IsEnabled() && robotDrive->getRightDist() > -5.0){
 		targetValue = (((targetDistance - (robotDrive->getRightDist()))/targetDistance)*-0.6);
