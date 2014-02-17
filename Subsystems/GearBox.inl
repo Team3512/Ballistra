@@ -256,7 +256,13 @@ void GearBox<T>::updateGear()
 template <class T>
 bool GearBox<T>::onTarget()
 {
-    return m_pid->OnTarget();
+    if(!m_havePID)
+    {
+        return false;
+        
+    }
+        
+    return getDistance() <= getSetpoint()*(1+m_pid->GetTolerance()) && getDistance() >= getSetpoint()*(1-m_pid->GetTolerance()) && fabs(m_pid->GetDeltaError()) <= m_pid->GetTolerance();
 
 }
 

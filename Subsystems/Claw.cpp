@@ -159,7 +159,7 @@ void Claw::Update() {
 		m_clawRotator->setSetpoint(GetTargetAngle()-0.5f);
 
 	}
-	else if(!m_zeroSwitch->Get() && GetTargetAngle() <= 0 && m_clawRotator->onTarget())
+	else if(!m_zeroSwitch->Get() && GetTargetAngle() <= 0)
 	{
 		m_clawRotator->setSetpoint(0);
 

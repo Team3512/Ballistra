@@ -50,6 +50,9 @@ public:
     virtual float GetD();
     virtual float GetF();
 
+    virtual float GetDeltaError();
+    virtual float GetTolerance();
+
     virtual void SetSetpoint(float setpoint);
     virtual float GetSetpoint();
 
