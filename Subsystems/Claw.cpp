@@ -79,6 +79,10 @@ double Claw::GetAngle()
 
 }
 
+bool Claw::AtAngle() const {
+    return m_clawRotator->onTarget();
+}
+
 void Claw::SetWheelSetpoint( float speed ) {
     m_intakeWheel->setSetpoint( speed );
 }
