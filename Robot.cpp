@@ -83,7 +83,7 @@ void Robot::OperatorControl() {
         //robotDrive->setLeftManual( kinect->GetArmScale().second );
         //robotDrive->setRightManual( kinect->GetArmScale().first );
 
-    	DS_PrintOut();
+    	//DS_PrintOut();
 
         //arcade Drive
         if ( driveStick2->GetRawButton( 2 ) ) {
@@ -179,7 +179,7 @@ void Robot::Disabled(){
 	claw->SetWheelManual(0);
 
     while (IsDisabled()){
-        DS_PrintOut();
+    	claw->Update();
 
         logServerSink->acceptor(false);
         Wait (0.1);

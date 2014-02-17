@@ -26,7 +26,7 @@ Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort, unsigned int
 
     // Set up interrupt for encoder reset
     m_zeroSwitch->RequestInterrupts( Claw::ResetClawEncoder , this );
-    m_zeroSwitch->SetUpSourceEdge( false , true );
+    m_zeroSwitch->SetUpSourceEdge( true , true );
     m_zeroSwitch->EnableInterrupts();
 
     //magical values found using empirical testing don't change.
@@ -129,7 +129,7 @@ bool Claw::GetCollectorMode(){
 }
 
 void Claw::Update() {
-	if (m_shooterStates == SHOOTER_ARMISLIFTING && m_shootTimer.HasPeriodPassed(1.5)){
+	if (m_shooterStates == SHOOTER_ARMISLIFTING && m_shootTimer.HasPeriodPassed(0.5)){
 		for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
 		    m_ballShooter[i]->Set( true );
 		}
@@ -150,6 +150,9 @@ void Claw::Update() {
 
 		m_shootTimer.Reset();
 		m_shooterStates = SHOOTER_IDLE;
+	}
+	if (!m_zeroSwitch->Get()){
+		ResetEncoders();
 	}
 
 	setF(calcF());
