@@ -15,10 +15,10 @@
 #define M_PI 3.14159265
 #endif
 
-const float DriveTrain::maxWheelSpeed = 150.f;
+const float DriveTrain::maxWheelSpeed = 274.f;
 
 DriveTrain::DriveTrain() :
-            TrapezoidProfile( maxWheelSpeed , 5.f ),
+            TrapezoidProfile( maxWheelSpeed , 3.f ),
             m_settings( "RobotSettings.txt" ) {
     m_settings.update();
 

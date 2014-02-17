@@ -132,6 +132,8 @@ void Robot::OperatorControl() {
         }
         else if(shootButtons.pressedButton(11))
         {
+            // Collector should always be retracted when resetting encoder
+            claw->SetCollectorMode( false );
         	claw->SetAngle(0);
 
         }
