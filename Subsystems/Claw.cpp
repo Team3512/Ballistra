@@ -156,7 +156,7 @@ void Claw::Update() {
 
 	// Spins intake wheel to keep ball in while rotating claw at high speeds
 	if ( fabs(m_clawRotator->getRate()) > 35.f ) {
-	        SetWheelManual( -(fabs(m_clawRotator->getRate()) / 175.f) );
+        SetWheelManual( -0.5 * (fabs(m_clawRotator->getRate()) / 175.f) );
 	}
 
 	/* Fixes arm, when at reset angle, not touching zeroSwitch due to gradual

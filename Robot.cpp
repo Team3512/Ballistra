@@ -238,7 +238,7 @@ void Robot::DS_PrintOut() {
         pidGraph.resetInterval();
     }
 
-    if(displayTimer->HasPeriodPassed(0.1)){
+    if(displayTimer->HasPeriodPassed(0.5)){
         //(*ls) << SetLogLevel(LogEvent::VERBOSE_INFO) << kinect->GetArmScale().second << std::flush;
         //logServerSink->acceptor(false);
 
