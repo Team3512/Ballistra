@@ -127,7 +127,7 @@ void Robot::OperatorControl() {
         }
         else if(shootButtons.pressedButton(9))
         {
-        	claw->SetAngle(88);
+        	claw->SetAngle(103);
 
         }
         else if(shootButtons.pressedButton(11))
