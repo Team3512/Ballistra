@@ -21,13 +21,20 @@ void Robot::RightLeftAuton() {
 	timer->Start();
 	bool state = checkReflectiveStrips();
 	claw->SetAngle(88.0);
+
 	Wait (0.5);
-	while ((robotDrive->getRightDist())<targetDistance && IsEnabled() && robotDrive->getRightDist() > -5.0){
-		targetValue = (((targetDistance - (robotDrive->getRightDist()))/targetDistance)*-0.6);
-		std::cout << "right distance: " << (robotDrive->getRightDist())<< std::endl;
+
+	/* "&& robotDrive->getRightDist() > -5.0" ensures robot doesn't drive
+	 * backwards
+	 */
+	while (robotDrive->getRightDist() < targetDistance && IsEnabled() && robotDrive->getRightDist() > -5.0){
+	    targetValue = -0.6 * (1.f - robotDrive->getRightDist() / targetDistance );
+	    robotDrive->drive (targetValue , 0);
+
+	    std::cout << "right distance: " << (robotDrive->getRightDist())<< std::endl;
 		std::cout << "left distance: " << (robotDrive->getLeftDist()) << std::endl;
 		std::cout << "targetValue: " << targetValue << std::endl;
-		robotDrive->drive (targetValue , 0);
+
 		Wait (0.1);
 	}
 	robotDrive->drive(-0.1,0);
