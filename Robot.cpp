@@ -83,7 +83,7 @@ void Robot::OperatorControl() {
         //robotDrive->setLeftManual( kinect->GetArmScale().second );
         //robotDrive->setRightManual( kinect->GetArmScale().first );
 
-    	DS_PrintOut();
+    	//DS_PrintOut();
 
         //arcade Drive
         if ( driveStick2->GetRawButton( 2 ) ) {
@@ -179,7 +179,7 @@ void Robot::Disabled(){
 	claw->SetWheelManual(0);
 
     while (IsDisabled()){
-        DS_PrintOut();
+    	claw->Update();
 
         logServerSink->acceptor(false);
         Wait (0.1);
@@ -238,7 +238,7 @@ void Robot::DS_PrintOut() {
         pidGraph.resetInterval();
     }
 
-    if(displayTimer->HasPeriodPassed(0.1)){
+    if(displayTimer->HasPeriodPassed(0.5)){
         //(*ls) << SetLogLevel(LogEvent::VERBOSE_INFO) << kinect->GetArmScale().second << std::flush;
         //logServerSink->acceptor(false);
 

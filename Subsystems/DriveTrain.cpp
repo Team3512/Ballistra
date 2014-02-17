@@ -60,7 +60,7 @@ void DriveTrain::drive( float throttle, float turn, bool isQuickTurn ) {
      * (Negate turn since joystick X-axis is reversed)
      */
     throttle = -applyDeadband( throttle );
-    turn = -applyDeadband( turn );
+    turn = applyDeadband( turn );
 
     double negInertia = turn - m_oldTurn;
     m_oldTurn = turn;
