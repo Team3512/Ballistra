@@ -16,7 +16,8 @@ class Solenoid;
 
 class Claw {
 public:
-    Claw (unsigned int clawRotatePort, unsigned int clawWheelPort, unsigned int zeroSwitchPort);
+    Claw (unsigned int clawRotatePort, unsigned int clawWheelPort,
+            unsigned int zeroSwitchPort, unsigned int haveBallPort);
     ~Claw();
 
     // Set mode of collector
@@ -37,7 +38,7 @@ public:
     void SetWheelSetpoint( float speed );
     void SetWheelManual( float speed );
 
-    double GetWheelSetpoint() const;
+    float GetWheelManual() const;
 
     double GetAngle();
 
@@ -78,8 +79,11 @@ private:
     GearBox<Talon>* m_clawRotator;
     GearBox<Talon>* m_intakeWheel;
 
-    //resets the encoder in m_clawRotator to 0
+    // Resets the encoder in m_clawRotator to 0
     DigitalInput* m_zeroSwitch;
+
+    // Returns true when ball is hitting limit switch in claw
+    DigitalInput* m_haveBallSwitch;
 
     Timer m_shootTimer;
     ShooterStates m_shooterStates;
@@ -94,6 +98,8 @@ private:
      * 'void* obj' should be a pointer to an instance of this class
      */
     static void ResetClawEncoder( long unsigned int interruptAssertedMask, void* obj );
+
+    static void CloseClaw( long unsigned int interruptAssertedMask, void* obj );
 };
 
 #endif // CLAW_HPP

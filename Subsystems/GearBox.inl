@@ -120,6 +120,16 @@ void GearBox<T>::setManual( float value ) {
 }
 
 template <class T>
+float GearBox<T>::getManual() const {
+    if ( !m_isReversed ) {
+        return m_motors[0]->Get();
+    }
+    else {
+        return -m_motors[0]->Get();
+    }
+}
+
+template <class T>
 void GearBox<T>::setPID( float p , float i , float d ) {
     if ( m_havePID ) {
         m_pid->SetPID( p , i , d );

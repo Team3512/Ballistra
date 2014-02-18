@@ -8,7 +8,7 @@ Robot::Robot() :
         shootButtons( 3 ),
         pidGraph( 3513 ) {
     robotDrive = new DriveTrain();
-    claw = new Claw( 7 , 8, 2);
+    claw = new Claw( 7 , 8 , 2 , 9 );
 
     driveStick1 = new Joystick (1);
     driveStick2 = new Joystick (2);
