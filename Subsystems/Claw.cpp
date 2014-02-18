@@ -34,7 +34,7 @@ Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort,
     // Set up interrupt for catching ball
     m_haveBallSwitch->RequestInterrupts( Claw::CloseClaw , this );
     m_haveBallSwitch->SetUpSourceEdge( false , true );
-    //m_haveBallSwitch->EnableInterrupts();
+    m_haveBallSwitch->EnableInterrupts();
 
     //magical values found using empirical testing don't change.
     setK(0.238f);
@@ -155,9 +155,6 @@ void Claw::Update() {
 
 		m_shootTimer.Reset();
 		m_shooterStates = SHOOTER_IDLE;
-	}
-	if (!m_zeroSwitch->Get()){
-		ResetEncoders();
 	}
 
 	setF(calcF());
