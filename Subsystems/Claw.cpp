@@ -209,7 +209,10 @@ float Claw::calcF()
 	return m_k*cos((GetAngle()+m_l)*M_PI/180.0f)/GetTargetAngle();
 
 }
+bool Claw::onTarget(){
+	return m_clawRotator->onTarget();
 
+}
 bool Claw::IsShooting() const {
     if (m_shooterStates != SHOOTER_IDLE){
     	return true;
