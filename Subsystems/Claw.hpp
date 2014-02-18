@@ -38,7 +38,7 @@ public:
     void SetWheelSetpoint( float speed );
     void SetWheelManual( float speed );
 
-    double GetWheelSetpoint() const;
+    float GetWheelManual() const;
 
     double GetAngle();
 

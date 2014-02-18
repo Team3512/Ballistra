@@ -44,6 +44,8 @@ public:
     // Disables PID controller and sets the motor speeds manually
     void setManual( float value );
 
+    float getManual() const;
+
     // Set P, I, and D terms for PID controller
     void setPID( float p , float i , float d );
 

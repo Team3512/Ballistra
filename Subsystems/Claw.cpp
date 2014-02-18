@@ -83,6 +83,10 @@ double Claw::GetTargetAngle() const {
     return m_clawRotator->getSetpoint();
 }
 
+float Claw::GetWheelManual() const {
+    return m_clawRotator->getManual();
+}
+
 double Claw::GetAngle()
 {
 	return m_clawRotator->getDistance();
