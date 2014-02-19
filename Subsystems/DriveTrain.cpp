@@ -35,7 +35,7 @@ DriveTrain::DriveTrain() :
 
     m_rightGrbx = new GearBox<Talon>( 0 , 3 , 4 , 4 , 5, 6 );
     m_rightGrbx->setReversed( true );
-
+    m_isDefencive = ( false );
     // c = PI * 10.16cm [wheel diameter]
     // dPerP = c / pulses
     m_leftGrbx->setDistancePerPulse( ((3.14159265 * 10.16 )/ 360.0 )* 1.0/3.0);
@@ -52,6 +52,10 @@ DriveTrain::~DriveTrain() {
 void DriveTrain::drive( float throttle, float turn, bool isQuickTurn ) {
     // Modified Cheesy Drive; base code courtesy of FRC Team 254
 
+	if (m_isDefencive == true){
+		throttle = throttle * -1;
+		turn = turn *-1;
+	}
     // Limit values to [-1 .. 1]
     throttle = limit( throttle , 1.f );
     turn = limit( turn , 1.f );
@@ -264,6 +268,18 @@ void DriveTrain::setGear( bool gear ) {
 
 bool DriveTrain::getGear() const {
     return m_leftGrbx->getGear();
+}
+void DriveTrain::setDefencive(bool defencive){
+	m_isDefencive = defencive;
+}
+//returns true if drive train is reversed
+bool DriveTrain::getDefencive(){
+	if (m_isDefencive == true){
+		return true;
+	}
+	else{
+		return false;
+	}
 }
 
 float DriveTrain::applyDeadband( float value ) {

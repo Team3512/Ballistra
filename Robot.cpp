@@ -151,6 +151,9 @@ void Robot::OperatorControl() {
         	claw->SetAngle(claw->GetTargetAngle()-3.0f);
 
         }
+        if (drive1Buttons.pressedButton (2)){
+        	robotDrive->setDefencive(!robotDrive->getDefencive());
+        }
 
         claw->Update();
 
@@ -158,10 +161,11 @@ void Robot::OperatorControl() {
             robotDrive->reloadPID();
             claw->ReloadPID();
         }
-
         drive1Buttons.updateButtons();
         drive2Buttons.updateButtons();
         shootButtons.updateButtons();
+
+        DS_PrintOut();
 
         Wait (0.01);
 
@@ -184,6 +188,8 @@ void Robot::Disabled(){
 
     while (IsDisabled()){
     	claw->Update();
+
+    	DS_PrintOut();
 
         logServerSink->acceptor(false);
         Wait (0.1);

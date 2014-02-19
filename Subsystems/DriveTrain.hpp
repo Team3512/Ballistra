@@ -59,6 +59,10 @@ public:
     // TODO check if 'true' is high gear
     bool getGear() const;
 
+    void setDefencive (bool defencive);
+
+    bool getDefencive();
+
     const static float maxWheelSpeed;
 
 private:
@@ -66,6 +70,8 @@ private:
 
     float m_deadband;
     float m_sensitivity;
+
+    bool m_isDefencive;
 
     // Cheesy Drive variables
     float m_oldTurn;
