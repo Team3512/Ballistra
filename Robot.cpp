@@ -92,6 +92,9 @@ void Robot::OperatorControl() {
         else {
             robotDrive->drive( driveStick1->GetY() , driveStick2->GetZ() );
         }
+        std::cout << "Drive Stick 1: "<< driveStick1->GetY() << std::endl;
+        std::cout << "Drive Stick 2: "<< driveStick2->GetZ() << std::endl;
+
 
         if ( drive1Buttons.releasedButton( 1 ) ) {
             robotDrive->setGear( !robotDrive->getGear() );
@@ -161,6 +164,7 @@ void Robot::OperatorControl() {
         shootButtons.updateButtons();
 
         Wait (0.01);
+
     }
 }
 

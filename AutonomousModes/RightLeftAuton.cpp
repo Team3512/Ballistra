@@ -35,16 +35,25 @@ void Robot::RightLeftAuton() {
 		std::cout << "left distance: " << (robotDrive->getLeftDist()) << std::endl;
 		std::cout << "targetValue: " << targetValue << std::endl;
 
+		if(claw->onTarget())
+		{
+		claw->SetWheelManual(0.0);
+		}
 		claw->Update();
 		Wait (0.1);
 	}
 
+	robotDrive->drive(0,0);
+	std::cout << "final right distance: " << (robotDrive->getRightDist()) << std::endl;
+	std::cout << "final left distance: " << (robotDrive->getLeftDist()) << std::endl;
+
+	while (robotDrive->getLeftDist()*-1 < robotDrive->getRightDist()){
+		robotDrive->setLeftManual(0.3);
+	}
 	claw->SetWheelManual(0.0);
 	robotDrive->drive(-0.1,0);
 	Wait (0.1);
 	robotDrive->drive(0,0);
-	std::cout << "final right distance: " << (robotDrive->getRightDist()) << std::endl;
-	std::cout << "final left distance: " << (robotDrive->getLeftDist()) << std::endl;
 	if (state == true){
 		claw->Shoot();
 	}

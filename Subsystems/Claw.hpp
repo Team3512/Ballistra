@@ -59,6 +59,8 @@ public:
     // Returns true if this instance is in the middle of shooting
     bool IsShooting() const;
 
+    bool onTarget();
+
     void setK(float k);
 
     void setF(float f);
