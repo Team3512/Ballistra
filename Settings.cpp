@@ -8,7 +8,7 @@
 #include "Settings.hpp"
 #include <fstream>
 #include <iostream>
-#include <cmath>
+#include <cstdlib>
 
 Settings::Settings( std::string fileName ) :
         m_fileName( fileName ) ,
