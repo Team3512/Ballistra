@@ -5,11 +5,11 @@
 //Author: FRC Team 3512, Spartatroniks
 //=============================================================================
 
-#include <map>
-#include <string>
-
 #ifndef SETTINGS_HPP
 #define SETTINGS_HPP
+
+#include <map>
+#include <string>
 
 class Settings {
 public:
