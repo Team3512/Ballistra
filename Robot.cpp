@@ -21,7 +21,7 @@ Robot::Robot() :
     kinect = new RobotKinect();
     //robotPosition = new RobotPosition(1,2,3,4);
 
-    driverStation = DriverStationDisplay<Robot>::getInstance( atoi( settings.getValueFor( "DS_Port" ).c_str() ) );
+    driverStation = DriverStationDisplay<Robot>::getInstance( settings.getInt( "DS_Port" ) );
 
     driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
     driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
@@ -29,7 +29,7 @@ Robot::Robot() :
     pidGraph.resetTime();
     pidGraph.setSendInterval( 200 );
 
-    insight = Insight::getInstance( atoi( settings.getValueFor( "Insight_Port" ).c_str() ) );
+    insight = Insight::getInstance( settings.getInt( "Insight_Port" ) );
 
     logger1 = new Logger ();
     ls = new LogStream(logger1);
