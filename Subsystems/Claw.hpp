@@ -42,6 +42,8 @@ public:
 
     double GetAngle();
 
+    bool AtAngle() const;
+
     // Set encoder distances to 0
     void ResetEncoders();
 
