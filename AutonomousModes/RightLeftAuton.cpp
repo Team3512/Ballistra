@@ -7,6 +7,10 @@
 #include "../Robot.hpp"
 #include <Timer.h>
 
+#ifndef M_PI
+#define M_PI 3.14159265
+#endif
+
 bool Robot::checkReflectiveStrips() {
 
 	return true;
@@ -27,8 +31,8 @@ void Robot::RightLeftAuton() {
 	 * backwards
 	 */
 	while (robotDrive->getRightDist() < targetDistance && IsEnabled() && robotDrive->getRightDist() > -5.0){
-	    robotDrive->setLeftManual( 0.6 * (1.f - robotDrive->getLeftDist() / targetDistance) );
-	    robotDrive->setRightManual( 0.6 * (1.f - robotDrive->getRightDist() / targetDistance) );
+	    robotDrive->setLeftManual( sin( M_PI / 2 * 0.6 * (1.f - robotDrive->getLeftDist() / targetDistance) ) );
+	    robotDrive->setRightManual( sin( M_PI / 2 * 0.6 * (1.f - robotDrive->getRightDist() / targetDistance) ) );
 
 	    std::cout << "right distance: " << (robotDrive->getRightDist())<< std::endl;
 		std::cout << "left distance: " << (robotDrive->getLeftDist()) << std::endl;
