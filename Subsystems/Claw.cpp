@@ -30,7 +30,7 @@ Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort,
     // Set up interrupt for encoder reset
     m_zeroSwitch->RequestInterrupts( Claw::ResetClawEncoder , this );
     m_zeroSwitch->SetUpSourceEdge( true , true );
-    m_zeroSwitch->EnableInterrupts();
+    //m_zeroSwitch->EnableInterrupts();
 
     // Set up interrupt for catching ball
     m_haveBallSwitch->RequestInterrupts( Claw::CloseClaw , this );
@@ -43,6 +43,8 @@ Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort,
 
     m_collectorArm = new Solenoid(5);
     m_vacuum = new Relay (2, Relay::kForwardOnly);
+
+    m_lastZeroSwitch = true;
 
     ReloadPID();
     m_shooterStates = SHOOTER_IDLE;
@@ -202,6 +204,13 @@ void Claw::Update() {
             m_clawRotator->onTarget() ) {
         m_clawRotator->setSetpoint( GetTargetAngle() - 5.f );
     }
+
+    // If wasn't pressed last time and is now
+    if ( m_lastZeroSwitch && !m_zeroSwitch->Get() ) {
+        ResetClawEncoder( 0 , this );
+    }
+
+    m_lastZeroSwitch = m_zeroSwitch->Get();
 
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "Angle: %f", m_clawRotator->getDistance());
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "A Setpt: %f", GetTargetAngle());

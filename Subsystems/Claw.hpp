@@ -99,6 +99,8 @@ private:
     Relay *m_vacuum;
     Solenoid *m_collectorArm;
 
+    bool m_lastZeroSwitch;
+
     /* Used for claw rotation encoder interrupt
      * 'void* obj' should be a pointer to an instance of this class
      */
