@@ -6,6 +6,7 @@
 
 #include <Solenoid.h>
 #include <DriverStationLCD.h>
+#include <DriverStation.h>
 
 Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort,
         unsigned int zeroSwitchPort, unsigned int haveBallPort) :
@@ -80,6 +81,7 @@ void Claw::ManualSetAngle(float value) {
 }
 void Claw::testClaw(){
 	std::vector<Solenoid*>::iterator it;
+	DriverStation *dsInstance = DriverStation::GetInstance();
 
 	it = m_ballShooter.begin();
 	while ( it != m_ballShooter.end() ) {
@@ -93,7 +95,7 @@ void Claw::testClaw(){
 		Wait(1.5);
 		it++;
 
-		if (IsDisabled()){
+		if (dsInstance->IsDisabled()){
 			return;
 		}
 	}
