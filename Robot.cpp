@@ -197,7 +197,9 @@ void Robot::Disabled(){
 }
 
 void Robot::Test(){
-    calibrateTalons();
+	claw->testClaw();
+
+	/* calibrateTalons();
 
     mainCompressor->Start();
 
@@ -206,7 +208,7 @@ void Robot::Test(){
     testDriveTrain(false, true, -1, 1);
     testDriveTrain(false, false, -1, 1);
     testCompressor();
-    robotDrive->drive( 0 , 0 );
+    robotDrive->drive( 0 , 0 ); */
 }
 
 bool Robot::testCompressor(){

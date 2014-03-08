@@ -8,6 +8,7 @@
 #include <Timer.h>
 #include <DriverStationLCD.h>
 #include <DigitalInput.h>
+#include <Relay.h>
 
 #include "../Settings.hpp"
 #include "GearBox.hpp"
@@ -63,6 +64,8 @@ public:
 
     void setF(float f);
 
+    void testClaw();
+
     float calcF();
     typedef enum ShooterStates {
     	SHOOTER_IDLE,
@@ -91,7 +94,7 @@ private:
     float m_setpoint;
 
     std::vector<Solenoid*> m_ballShooter;
-    Solenoid *m_vacuum;
+    Relay *m_vacuum;
     Solenoid *m_collectorArm;
 
     /* Used for claw rotation encoder interrupt

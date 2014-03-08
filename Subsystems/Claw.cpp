@@ -41,7 +41,7 @@ Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort,
     m_l = 69.0f;
 
     m_collectorArm = new Solenoid(5);
-    m_vacuum = new Solenoid (6);
+    m_vacuum = new Relay (2, Relay::kForwardOnly);
 
     ReloadPID();
     m_shooterStates = SHOOTER_IDLE;
@@ -77,6 +77,26 @@ void Claw::ManualSetAngle(float value) {
 
 	}
 
+}
+void Claw::testClaw(){
+	std::vector<Solenoid*>::iterator it;
+
+	it = m_ballShooter.begin();
+	while ( it != m_ballShooter.end() ) {
+		(*it)->Set(true);
+		Wait(1.5);
+		(*it)->Set(false);
+		Wait(1.5);
+		m_vacuum->Set(Relay::kOn);
+		Wait(1.5);
+		m_vacuum->Set(Relay::kOff);
+		Wait(1.5);
+		it++;
+
+		if (IsDisabled()){
+			return;
+		}
+	}
 }
 
 double Claw::GetTargetAngle() const {
@@ -149,12 +169,12 @@ void Claw::Update() {
 		for ( unsigned int i = 0 ; i < m_ballShooter.size() ; i++ ) {
 		     m_ballShooter[i]->Set( false );
 		}
-		m_vacuum->Set(true);
+		m_vacuum->Set(Relay::kOn);
 		m_shootTimer.Reset();
 		m_shooterStates = SHOOTER_VACUUMING;
 	}
-	if (m_shooterStates == SHOOTER_VACUUMING && m_shootTimer.HasPeriodPassed(1.5)){
-		m_vacuum->Set(false);
+	if (m_shooterStates == SHOOTER_VACUUMING && m_shootTimer.HasPeriodPassed(3.0)){
+		m_vacuum->Set(Relay::kOff);
 		m_collectorArm->Set (false);
 
 		m_shootTimer.Reset();
