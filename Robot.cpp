@@ -21,7 +21,7 @@ Robot::Robot() :
     kinect = new RobotKinect();
     //robotPosition = new RobotPosition(1,2,3,4);
 
-    driverStation = DriverStationDisplay<Robot>::getInstance( atoi( settings.getValueFor( "DS_Port" ).c_str() ) );
+    driverStation = DriverStationDisplay<Robot>::getInstance( settings.getInt( "DS_Port" ) );
 
     driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
     driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
@@ -29,7 +29,7 @@ Robot::Robot() :
     pidGraph.resetTime();
     pidGraph.setSendInterval( 200 );
 
-    insight = Insight::getInstance( atoi( settings.getValueFor( "Insight_Port" ).c_str() ) );
+    insight = Insight::getInstance( settings.getInt( "Insight_Port" ) );
 
     logger1 = new Logger ();
     ls = new LogStream(logger1);
@@ -271,6 +271,50 @@ void Robot::DS_PrintOut() {
         DS::AddElementData( driverStation , "RIGHT_RPM" , robotDrive->getRightRate() );
         DS::AddElementData( driverStation , "LEFT_DIST" , robotDrive->getLeftDist() );
         DS::AddElementData( driverStation , "RIGHT_DIST" , robotDrive->getRightDist() );
+
+        DS::AddElementData( driverStation , "ANGLE_SET_DISP" , claw->GetTargetAngle() );
+        DS::AddElementData( driverStation , "ANGLE_SET" , static_cast<int8_t>( claw->GetTargetAngle() / 175.f * 100.f ) );
+
+        DS::AddElementData( driverStation , "ANGLE_REAL_DISP" , claw->GetAngle() );
+        DS::AddElementData( driverStation , "ANGLE_REAL" , static_cast<int8_t>( claw->GetAngle() / 175.f * 100.f ) );
+
+        DS::StatusLight atAngle = DS::StatusLight::inactive;
+
+        if ( claw->GetTargetAngle() > 150.f ) {
+            if ( claw->AtAngle() ) {
+                atAngle = DS::StatusLight::active;
+            }
+            else {
+                atAngle = DS::StatusLight::standby;
+            }
+        }
+        DS::AddElementData( driverStation , "ANGLE_PICKUP" , atAngle );
+
+        if ( claw->GetTargetAngle() < 150.f && claw->GetTargetAngle() > 50.f ) {
+            if ( claw->AtAngle() ) {
+                atAngle = DS::StatusLight::active;
+            }
+            else {
+                atAngle = DS::StatusLight::standby;
+            }
+        }
+        else {
+            atAngle = DS::StatusLight::inactive;
+        }
+        DS::AddElementData( driverStation , "ANGLE_SHOOT" , atAngle );
+
+        if ( claw->GetTargetAngle() <= 1.f ) {
+            if ( claw->AtAngle() ) {
+                atAngle = DS::StatusLight::active;
+            }
+            else {
+                atAngle = DS::StatusLight::standby;
+            }
+        }
+        else {
+            atAngle = DS::StatusLight::inactive;
+        }
+        DS::AddElementData( driverStation , "ANGLE_ZERO" , atAngle );
 
         driverStation->sendToDS();
     }

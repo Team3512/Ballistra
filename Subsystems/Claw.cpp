@@ -113,6 +113,10 @@ double Claw::GetAngle()
 
 }
 
+bool Claw::AtAngle() const {
+    return m_clawRotator->onTarget();
+}
+
 void Claw::SetWheelSetpoint( float speed ) {
     m_intakeWheel->setSetpoint( speed );
 }
@@ -134,9 +138,9 @@ void Claw::ReloadPID() {
     float d = 0.f;
 
     // Set shooter rotator PID
-    p = atof( m_settings.getValueFor( "PID_ARM_ROTATE_P" ).c_str() );
-    i = atof( m_settings.getValueFor( "PID_ARM_ROTATE_I" ).c_str() );
-    d = atof( m_settings.getValueFor( "PID_ARM_ROTATE_D" ).c_str() );
+    p = m_settings.getFloat( "PID_ARM_ROTATE_P" );
+    i = m_settings.getFloat( "PID_ARM_ROTATE_I" );
+    d = m_settings.getFloat( "PID_ARM_ROTATE_D" );
     m_clawRotator->setPID( p , i , d );
 }
 
