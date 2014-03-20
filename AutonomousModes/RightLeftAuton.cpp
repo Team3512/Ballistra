@@ -14,7 +14,7 @@ bool Robot::checkReflectiveStrips() {
 
 void Robot::RightLeftAuton() {
 	float targetValue;
-	const float targetDistance = 355.0;
+	const float targetDistance = 295.0;
 	Timer *timer = new Timer;
 	timer->Reset();
 	robotDrive->resetEncoders();

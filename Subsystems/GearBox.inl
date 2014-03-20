@@ -53,7 +53,8 @@ GearBox<T>::GearBox( unsigned int shifterChan , unsigned int encA ,
     if ( m_havePID ) {
         m_encoder->SetPIDSourceParameter( Encoder::kDistance );
 
-        m_pid->SetPercentTolerance( 5.f );
+        //m_pid->SetPercentTolerance( 5.f );
+        m_pid->SetAbsoluteTolerance(1);
 
         m_encoder->Start();
         m_pid->Enable();
@@ -268,6 +269,7 @@ void GearBox<T>::updateGear()
 template <class T>
 bool GearBox<T>::onTarget()
 {
+#if 0
     if(!m_havePID)
     {
         return false;
@@ -275,6 +277,8 @@ bool GearBox<T>::onTarget()
     }
 
     return fabs(m_pid->GetError()/100.f) <= m_pid->GetTolerance() && fabs(m_pid->GetDeltaError()) <= m_pid->GetTolerance();
+#endif
+    return m_pid->OnTarget();
 }
 
 template <class T>

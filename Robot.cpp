@@ -26,6 +26,7 @@ Robot::Robot() :
     driverStation->addAutonMethod( "DriveForward Autonomous" , &Robot::DriveForwardAuton , this );
     driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
     driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
+    driverStation->addAutonMethod( "Side Auton" , &Robot::SideAuton , this );
 
     pidGraph.resetTime();
     pidGraph.setSendInterval( 200 );
@@ -132,8 +133,12 @@ void Robot::OperatorControl() {
         }
         else if(shootButtons.pressedButton(9))
         {
-        	claw->SetAngle(108.0);
+        	claw->SetAngle(100.0);
 
+        }
+        else if (shootButtons.pressedButton(8))
+        {
+        	claw->SetAngle(75.0);
         }
         else if(shootButtons.pressedButton(11))
         {
@@ -158,7 +163,7 @@ void Robot::OperatorControl() {
 
         claw->Update();
 
-        if ( shootButtons.releasedButton( 8 ) ) {
+        if ( drive2Buttons.releasedButton( 8 ) ) {
             robotDrive->reloadPID();
             claw->ReloadPID();
         }
@@ -256,7 +261,7 @@ void Robot::DS_PrintOut() {
         //logServerSink->acceptor(false);
 
         DriverStationLCD *userMessages = DriverStationLCD::GetInstance();
-        userMessages->Clear();
+        //userMessages->Clear();
 
         //userMessages->Printf(DriverStationLCD::kUser_Line1, 1,"accelerometer %f ",accelerometer->GetAcceleration(ADXL345_I2C_ALT::kAxis_X));
 
@@ -264,7 +269,7 @@ void Robot::DS_PrintOut() {
         //userMessages->Printf(DriverStationLCD::kUser_Line3, 1," Left : %f", (driveStick1->GetTwist() + 1)/2);
         //userMessages->Printf(DriverStationLCD::kUser_Line4, 1," Right : %f", (driveStick2->GetTwist() + 1)/2 );
 
-        userMessages->UpdateLCD();
+        //userMessages->UpdateLCD();
 
         driverStation->clear();
 

@@ -44,6 +44,7 @@ public:
     void RightLeftAuton();
     void AutonMotionProfile();
     void DriveForwardAuton();
+    void SideAuton();
 
     void DS_PrintOut();
 

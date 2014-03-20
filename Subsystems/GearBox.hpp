@@ -87,9 +87,10 @@ public:
 
     void resetPID();
 
+    PIDController* m_pid;
+
 private:
     Encoder* m_encoder;
-    PIDController* m_pid;
 
     Solenoid* m_shifter;
 
