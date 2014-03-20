@@ -206,7 +206,7 @@ void Claw::Update() {
     }
 
     // If wasn't pressed last time and is now
-    if ( m_lastZeroSwitch && !m_zeroSwitch->Get() ) {
+    if (!m_zeroSwitch->Get() ) {
         ResetClawEncoder( 0 , this );
     }
 
@@ -218,6 +218,8 @@ void Claw::Update() {
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line4, "OnTarget: %u", static_cast<unsigned int>(m_clawRotator->onTarget()));
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line5, "A Rate: %f", m_clawRotator->getRate());
     DriverStationLCD::GetInstance()->UpdateLCD();
+
+    std::cout << "error: " << m_clawRotator->m_pid->GetError() << " tolerance: " << m_clawRotator->m_pid->GetTolerance() << std::endl;
 
 }
 
