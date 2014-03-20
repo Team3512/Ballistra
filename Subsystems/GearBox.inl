@@ -50,7 +50,6 @@ GearBox<T>::GearBox( unsigned int shifterChan , unsigned int encA ,
     if ( motor3 != 0 ) {
         m_motors.push_back( new T( motor3 ) );
     }
-
     if ( m_havePID ) {
         m_encoder->SetPIDSourceParameter( Encoder::kDistance );
 

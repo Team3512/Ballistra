@@ -19,10 +19,10 @@ Claw::Claw(unsigned int clawRotatePort, unsigned int clawWheelPort,
     m_clawRotator->setDistancePerPulse( (1.0/71.0f)*14.0 /44.0 );
     m_clawRotator->setReversed(true);
 
-    m_ballShooter.push_back( new Solenoid( 1 ) );
+    m_ballShooter.push_back( new Solenoid( 8 ) );
     m_ballShooter.push_back( new Solenoid( 2 ) );
     m_ballShooter.push_back( new Solenoid( 3 ) );
-    m_ballShooter.push_back( new Solenoid( 4 ) );
+    m_ballShooter.push_back( new Solenoid( 6 ) );
 
     m_zeroSwitch = new DigitalInput(zeroSwitchPort);
     m_haveBallSwitch = new DigitalInput(haveBallPort);

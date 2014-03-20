@@ -23,6 +23,7 @@ Robot::Robot() :
 
     driverStation = DriverStationDisplay<Robot>::getInstance( settings.getInt( "DS_Port" ) );
 
+    driverStation->addAutonMethod( "DriveForward Autonomous" , &Robot::DriveForwardAuton , this );
     driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
     driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
 
@@ -92,8 +93,8 @@ void Robot::OperatorControl() {
         else {
             robotDrive->drive( driveStick1->GetY() , driveStick2->GetZ() );
         }
-        std::cout << "Drive Stick 1: "<< driveStick1->GetY() << std::endl;
-        std::cout << "Drive Stick 2: "<< driveStick2->GetZ() << std::endl;
+        //std::cout << "Drive Stick 1: "<< driveStick1->GetY() << std::endl;
+        //std::cout << "Drive Stick 2: "<< driveStick2->GetZ() << std::endl;
 
 
         if ( drive1Buttons.releasedButton( 1 ) ) {
@@ -126,12 +127,12 @@ void Robot::OperatorControl() {
 
         if(shootButtons.pressedButton(7))
         {
-        	claw->SetAngle(175);
+        	claw->SetAngle(190.0);
 
         }
         else if(shootButtons.pressedButton(9))
         {
-        	claw->SetAngle(103);
+        	claw->SetAngle(108.0);
 
         }
         else if(shootButtons.pressedButton(11))

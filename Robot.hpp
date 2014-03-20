@@ -43,6 +43,7 @@ public:
 
     void RightLeftAuton();
     void AutonMotionProfile();
+    void DriveForwardAuton();
 
     void DS_PrintOut();
 

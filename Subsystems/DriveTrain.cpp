@@ -178,8 +178,8 @@ void DriveTrain::drive( float throttle, float turn, bool isQuickTurn ) {
     m_leftGrbx->setManual( leftPwm );
     m_rightGrbx->setManual( rightPwm );
 
-    std::cout << "left PWM:" << leftPwm << std::endl;
-    std::cout << "right PWM:" << rightPwm << std::endl;
+    //std::cout << "left PWM:" << leftPwm << std::endl;
+    //std::cout << "right PWM:" << rightPwm << std::endl;
 }
 
 void DriveTrain::setDeadband( float band ) {
