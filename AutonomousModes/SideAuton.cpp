@@ -7,14 +7,10 @@
 #include "../Robot.hpp"
 #include <Timer.h>
 
-bool Robot::checkReflectiveStrips() {
 
-	return true;
-}
-
-void Robot::RightLeftAuton() {
+void Robot::SideAuton() {
 	float targetValue;
-	const float targetDistance = 295.0;
+	const float targetDistance = -315.0;
 	Timer *timer = new Timer;
 	timer->Reset();
 	robotDrive->resetEncoders();
@@ -25,14 +21,14 @@ void Robot::RightLeftAuton() {
 	Wait (0.5);
 	robotDrive->drive(-0.1, 0);
 	Wait (.25);
-	claw->SetAngle(100.0);
+	claw->SetAngle(66.0);
 	Wait (0.5);
 
 	/* "&& robotDrive->getRightDist() > -5.0" ensures robot doesn't drive
 	 * backwards
 	 */
-	while (robotDrive->getRightDist() < targetDistance && IsEnabled() && robotDrive->getRightDist() > -5.0 && IsAutonomous()){
-	    targetValue = -0.6 * (1.f - robotDrive->getRightDist() / targetDistance );
+	while (robotDrive->getRightDist() > targetDistance && IsEnabled() && IsAutonomous()){
+	    targetValue = 0.6 * (1.f - robotDrive->getRightDist() / targetDistance );
 	    robotDrive->drive (targetValue , 0);
 
 	    //std::cout << "right distance: " << (robotDrive->getRightDist())<< std::endl;
@@ -44,6 +40,7 @@ void Robot::RightLeftAuton() {
 		claw->SetWheelManual(0.0);
 		}
 		claw->Update();
+		DS_PrintOut();
 		Wait (0.1);
 	}
 
@@ -51,8 +48,10 @@ void Robot::RightLeftAuton() {
 	//std::cout << "final right distance: " << (robotDrive->getRightDist()) << std::endl;
 	//std::cout << "final left distance: " << (robotDrive->getLeftDist()) << std::endl;
 
-	while (robotDrive->getLeftDist()*-1 < robotDrive->getRightDist()){
-		robotDrive->setLeftManual(0.3);
+	while (robotDrive->getLeftDist()*-1 > robotDrive->getRightDist() && IsEnabled() && IsAutonomous()){
+		robotDrive->setLeftManual(-0.3);
+		DS_PrintOut();
+		Wait (0.1);
 	}
 	claw->SetWheelManual(0.0);
 	robotDrive->drive(-0.1,0);

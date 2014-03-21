@@ -138,7 +138,7 @@ void Robot::OperatorControl() {
         }
         else if (shootButtons.pressedButton(8))
         {
-        	claw->SetAngle(75.0);
+        	claw->SetAngle(66.0);
         }
         else if(shootButtons.pressedButton(11))
         {
@@ -189,6 +189,7 @@ void Robot::Autonomous(){
 
 void Robot::Disabled(){
 
+	claw->SetAngle(0);
 	claw->ManualSetAngle(0);
 	claw->SetWheelManual(0);
 
@@ -260,7 +261,7 @@ void Robot::DS_PrintOut() {
         //(*ls) << SetLogLevel(LogEvent::VERBOSE_INFO) << kinect->GetArmScale().second << std::flush;
         //logServerSink->acceptor(false);
 
-        DriverStationLCD *userMessages = DriverStationLCD::GetInstance();
+        //DriverStationLCD *userMessages = DriverStationLCD::GetInstance();
         //userMessages->Clear();
 
         //userMessages->Printf(DriverStationLCD::kUser_Line1, 1,"accelerometer %f ",accelerometer->GetAcceleration(ADXL345_I2C_ALT::kAxis_X));

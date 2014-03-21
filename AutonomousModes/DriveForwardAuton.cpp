@@ -6,7 +6,7 @@ void Robot::DriveForwardAuton(){
 	Wait(0.5);
 	robotDrive->drive (-0.1, 0);
 	Wait (0.5);
-    robotDrive->drive ( -1 , 0);
-    Wait (1.5);
+    robotDrive->drive ( -0.5 , 0);
+    Wait (0.5);
     robotDrive->drive (0,0);
 }

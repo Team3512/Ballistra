@@ -263,9 +263,9 @@ void Claw::ResetClawEncoder( long unsigned int interruptAssertedMask, void* obj 
     Claw* claw = static_cast<Claw*>(obj);
 
     if ( claw->GetTargetAngle() <= 0.0 ) {
+        claw->m_clawRotator->setSetpoint( 0.f );
         claw->m_clawRotator->resetPID();
         claw->m_clawRotator->resetEncoder();
-        claw->m_clawRotator->setSetpoint( 0.f );
     }
 }
 
