@@ -10,7 +10,7 @@
 
 void Robot::SideAuton() {
 	float targetValue;
-	const float targetDistance = -315.0;
+	const float targetDistance = -430.0;
 	Timer *timer = new Timer;
 	timer->Reset();
 	robotDrive->resetEncoders();
@@ -21,7 +21,7 @@ void Robot::SideAuton() {
 	Wait (0.5);
 	robotDrive->drive(-0.1, 0);
 	Wait (.25);
-	claw->SetAngle(66.0);
+	claw->SetAngle(39.0);
 	Wait (0.5);
 
 	/* "&& robotDrive->getRightDist() > -5.0" ensures robot doesn't drive
