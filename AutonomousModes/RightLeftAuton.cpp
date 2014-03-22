@@ -25,7 +25,7 @@ void Robot::RightLeftAuton() {
 	Wait (0.5);
 	robotDrive->drive(-0.1, 0);
 	Wait (.25);
-	claw->SetAngle(100.0);
+	claw->SetAngle(108.0);
 	Wait (0.5);
 
 	/* "&& robotDrive->getRightDist() > -5.0" ensures robot doesn't drive
@@ -51,7 +51,7 @@ void Robot::RightLeftAuton() {
 	//std::cout << "final right distance: " << (robotDrive->getRightDist()) << std::endl;
 	//std::cout << "final left distance: " << (robotDrive->getLeftDist()) << std::endl;
 
-	while (robotDrive->getLeftDist()*-1 < robotDrive->getRightDist()){
+	while (robotDrive->getLeftDist()*-1 < robotDrive->getRightDist()&& IsEnabled() && IsAutonomous()){
 		robotDrive->setLeftManual(0.3);
 	}
 	claw->SetWheelManual(0.0);

@@ -249,7 +249,7 @@ void GearBox<T>::updateGear()
 
         for(unsigned int i = 0; i < m_motors.size(); i++)
         {
-            if(fabs(m_motors[i]->Get()) < 0.4)
+            if(fabs(m_motors[i]->Get()) < 0.12)
             {
                 return;
 
@@ -257,12 +257,10 @@ void GearBox<T>::updateGear()
 
         }
 
-        //TODO: get rid of magical values 4 and 0.4
-        if ( (m_pid->IsEnabled() && m_encoder->GetRate() > 4) || !m_pid->IsEnabled())
-        {
+        //if ( (m_pid->IsEnabled() && fabs(m_encoder->GetRate()) > 50) || !m_pid->IsEnabled()) {
             m_shifter->Set( m_targetGear );
 
-        }
+        //}
 
 }
 
