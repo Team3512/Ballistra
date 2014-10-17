@@ -27,6 +27,7 @@ Robot::Robot() :
     driverStation->addAutonMethod( "Right/Left Autonomous" , &Robot::RightLeftAuton , this);
     driverStation->addAutonMethod( "MotionProfile" , &Robot::AutonMotionProfile , this );
     driverStation->addAutonMethod( "Side Auton" , &Robot::SideAuton , this );
+    driverStation->addAutonMethod( "Noop Auton" , &Robot::NoopAuton , this );
 
     pidGraph.resetTime();
     pidGraph.setSendInterval( 200 );

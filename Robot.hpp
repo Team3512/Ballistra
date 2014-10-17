@@ -45,6 +45,7 @@ public:
     void AutonMotionProfile();
     void DriveForwardAuton();
     void SideAuton();
+    void NoopAuton();
 
     void DS_PrintOut();
 
