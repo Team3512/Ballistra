@@ -28,4 +28,3 @@ ftp -ivn $HOST < /tmp/ftp.$$
 # delete script and exit
 rm /tmp/ftp.$$
 exit 0
-
