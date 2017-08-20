@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "LogSinkBase.h"
+#include "LogSinkBase.hpp"
 
 /*!
   A sink for writing logged events to standard output.

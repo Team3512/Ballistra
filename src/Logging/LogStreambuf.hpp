@@ -4,9 +4,10 @@
 
 #include <iostream>
 #include <streambuf>
+#include <string>
 
-#include "LogEvent.h"
-#include "Logger.h"
+#include "LogEvent.hpp"
+#include "Logger.hpp"
 
 /*!
   An internal class used by LogStream. This class
@@ -14,7 +15,7 @@
  */
 class LogStreambuf : public std::streambuf {
 public:
-    LogStreambuf(Logger* logger);
+    explicit LogStreambuf(Logger* logger);
     virtual ~LogStreambuf() = default;
 
     std::streamsize xsputn(const char* s, std::streamsize n);

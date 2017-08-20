@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "LogStream.h"
+#include "LogStream.hpp"
 
 /*!
   The SetLogLevel class provides a manipulator for
@@ -19,7 +19,7 @@ public:
      \param level The verbosity level to use for
      the next message.
      */
-    SetLogLevel(LogEvent::VerbosityLevel level);
+    explicit SetLogLevel(LogEvent::VerbosityLevel level);
 
     friend LogStream& operator<<(LogStream& os, const SetLogLevel& in);
 

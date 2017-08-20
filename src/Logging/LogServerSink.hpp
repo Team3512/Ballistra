@@ -3,7 +3,8 @@
 #pragma once
 
 #include <list>
-#include "LogSinkBase.h"
+
+#include "LogSinkBase.hpp"
 
 /*!
   A file sink for the logged events.

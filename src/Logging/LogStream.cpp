@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2017 FRC Team 3512. All Rights Reserved.
 
-#include "LogStream.h"
+#include "LogStream.hpp"
 
 LogStream::LogStream(Logger* logger) : std::ostream(new LogStreambuf(logger)) {
     m_logger = logger;

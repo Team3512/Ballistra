@@ -49,7 +49,7 @@ public:
       \param level The event's verbosity level
       \param timestamp The time at which the event occurred
      */
-    LogEvent(std::string data, VerbosityLevel level, time_t timestamp);
+    LogEvent(std::string data, VerbosityLevel level, std::time_t timestamp);
 
     virtual ~LogEvent() = default;
 
@@ -64,7 +64,7 @@ public:
       in seconds since the Epoch.
       \return A normal POSIX format time
      */
-    time_t getAbsoluteTimestamp();
+    std::time_t getAbsoluteTimestamp();
 
     /*!
       Retrieve the time the event occurred as a time
@@ -76,7 +76,7 @@ public:
       \return The time in seconds since the initialization
       of the Logger class instance.
      */
-    time_t getRelativeTimestamp();
+    std::time_t getRelativeTimestamp();
 
     /*!
       Retrieves the string describing the event.
@@ -140,11 +140,11 @@ public:
       \param initial The initial time on which to base relative
       timestamps.
      */
-    void setInitialTime(time_t initial);
+    void setInitialTime(std::time_t initial);
 
 private:
     VerbosityLevel m_level;
-    time_t m_timestamp;
+    std::time_t m_timestamp;
     std::string m_buffer;
-    time_t m_initialTime;
+    std::time_t m_initialTime;
 };

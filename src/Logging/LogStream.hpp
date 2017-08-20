@@ -3,10 +3,10 @@
 #pragma once
 
 #include <iostream>
-#include "LogStreambuf.h"
 
-#include "LogEvent.h"
-#include "Logger.h"
+#include "LogEvent.hpp"
+#include "LogStreambuf.hpp"
+#include "Logger.hpp"
 
 /*!
   A subclass of std::ostream for logging messages
@@ -33,7 +33,7 @@ public:
       \param logger The logger class instance to log
        messages to.
      */
-    LogStream(Logger* logger);
+    explicit LogStream(Logger* logger);
     virtual ~LogStream();
 
     /*!

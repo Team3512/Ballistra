@@ -4,8 +4,9 @@
 
 #include <list>
 #include <string>
-#include "LogEvent.h"
-#include "LogSinkBase.h"
+
+#include "LogEvent.hpp"
+#include "LogSinkBase.hpp"
 
 /**
  * A logging engine.
@@ -63,9 +64,9 @@ public:
       This initial time is used to calculate an
       event's relative time.
      */
-    void setInitialTime(time_t time);
+    void setInitialTime(std::time_t time);
 
 private:
     LogSinkBaseList m_sinkList;
-    time_t m_initialTime;
+    std::time_t m_initialTime;
 };

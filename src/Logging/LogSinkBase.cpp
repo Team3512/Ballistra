@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2017 FRC Team 3512. All Rights Reserved.
 
-#include "LogSinkBase.h"
+#include "LogSinkBase.hpp"
 
 void LogSinkBase::setVerbosityLevels(LogEvent::VerbosityLevel levels) {
     m_verbosity = levels;

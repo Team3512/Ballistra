@@ -3,14 +3,16 @@
 #pragma once
 
 #include <fstream>
-#include "LogSinkBase.h"
+#include <string>
+
+#include "LogSinkBase.hpp"
 
 /*!
   A file sink for the logged events.
  */
 class LogFileSink : public LogSinkBase {
 public:
-    LogFileSink(std::string filename);
+    explicit LogFileSink(std::string filename);
     virtual ~LogFileSink() = default;
 
     /*!

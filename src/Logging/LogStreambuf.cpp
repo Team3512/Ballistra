@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2017 FRC Team 3512. All Rights Reserved.
 
-#include "LogStreambuf.h"
+#include "LogStreambuf.hpp"
 
 LogStreambuf::LogStreambuf(Logger* logger) { m_logger = logger; }
 

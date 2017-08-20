@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "LogEvent.h"
+#include "LogEvent.hpp"
 
 /*!
   LogSinkBase provides a base class on which to implement
