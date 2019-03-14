@@ -1,3 +1,3 @@
-# FRC Team 3512's 2014 Robot
+# FRC team 3512's 2014 robot
 
 The source code for our 2014 FRC robot named Ballistra.
