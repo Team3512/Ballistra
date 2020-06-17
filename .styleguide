@@ -8,8 +8,10 @@ cppSrcFileInclude {
   \.cpp$
 }
 
-modifiableFileExclude {
-  SFML/
-  SFMLNetwork/
-  SFMLSystem/
+includeOtherLibs {
+  ^frc/
+  ^frc2/
+  ^networktables/
+  ^units/
+  ^wpi/
 }
