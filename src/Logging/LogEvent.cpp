@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 FRC Team 3512. All Rights Reserved.
+// Copyright (c) 2014-2020 FRC Team 3512. All Rights Reserved.
 
 #include "LogEvent.hpp"
 
@@ -22,9 +22,9 @@ LogEvent::LogEvent(std::string data, VerbosityLevel level,
 
 LogEvent::VerbosityLevel LogEvent::getVerbosityLevel() { return m_level; }
 
-time_t LogEvent::getAbsoluteTimestamp() { return m_timestamp; }
+std::time_t LogEvent::getAbsoluteTimestamp() { return m_timestamp; }
 
-time_t LogEvent::getRelativeTimestamp() {
+std::time_t LogEvent::getRelativeTimestamp() {
     if (m_initialTime == 0) return 0;
 
     return m_timestamp - m_initialTime;

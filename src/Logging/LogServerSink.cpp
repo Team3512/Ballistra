@@ -1,9 +1,6 @@
-// Copyright (c) 2014-2017 FRC Team 3512. All Rights Reserved.
+// Copyright (c) 2014-2020 FRC Team 3512. All Rights Reserved.
 
 #include "LogServerSink.hpp"
-
-#include <cstdio>
-#include <cstring>
 
 #ifdef __VXWORKS__
 #include <netinet/in.h>
@@ -20,6 +17,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #endif
+
+#include <cstdio>
+#include <cstring>
 
 LogServerSink::~LogServerSink() {
     if (m_listensd >= 0) {
