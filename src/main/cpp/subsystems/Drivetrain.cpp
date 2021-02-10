@@ -49,6 +49,11 @@ void Drivetrain::TeleopPeriodic() {
         m_isDefensive = !m_isDefensive;
     }
 
-    Drive(driveStick1.GetY(), driveStick2.GetZ(),
-          driveStick2.GetRawButtonPressed(2));
+    if (m_isDefensive) {
+        Drive(-driveStick1.GetY(), -driveStick2.GetZ(),
+              driveStick2.GetRawButtonPressed(2));
+    } else {
+        Drive(driveStick1.GetY(), driveStick2.GetZ(),
+              driveStick2.GetRawButtonPressed(2));
+    }
 }

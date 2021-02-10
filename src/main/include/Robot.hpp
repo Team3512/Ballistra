@@ -3,8 +3,6 @@
 #pragma once
 
 #include <frc/TimedRobot.h>
-#include <frc2/Timer.h>
-#include <wpi/raw_ostream.h>
 
 #include "AutonomousChooser.hpp"
 #include "subsystems/Claw.hpp"
@@ -14,7 +12,10 @@ class Robot : public frc::TimedRobot {
 public:
     Robot();
 
+    void DisabledInit() override;
     void AutonomousInit() override;
+    void TeleopInit() override;
+    void TestInit() override;
 
     void RobotPeriodic() override;
     void AutonomousPeriodic() override;
@@ -23,21 +24,13 @@ public:
 
     bool CheckReflectiveStrips();
 
-    void AutonRightLeftInit();
-    void AutonRightLeftPeriodic();
-    void AutonMotionProfileInit();
-    void AutonMotionProfilePeriodic();
-    void AutonDriveForwardInit();
-    void AutonDriveForwardPeriodic();
-    void AutonSideInit();
-    void AutonSidePeriodic();
+    void AutonRightLeft();
+    void AutonDriveForward();
+    void AutonSide();
 
 private:
     Drivetrain m_drivetrain;
     Claw m_claw;
 
-    frc2::Timer autonTimer;
-
-    AutonomousChooser m_autonChooser{
-        "No-op", [] { wpi::outs() << "No-op autonomous\n"; }, [] {}};
+    frc3512::AutonomousChooser m_autonChooser{"No-op", [] {}};
 };

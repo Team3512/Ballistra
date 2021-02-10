@@ -3,30 +3,24 @@
 #include "Robot.hpp"
 
 Robot::Robot() {
-    m_autonChooser.AddAutonomous(
-        "DriveForward Autonomous", [=] { AutonDriveForwardInit(); },
-        [=] { AutonDriveForwardPeriodic(); });
-    m_autonChooser.AddAutonomous(
-        "Right/Left Autonomous", [=] { AutonRightLeftInit(); },
-        [=] { AutonRightLeftPeriodic(); });
-    m_autonChooser.AddAutonomous(
-        "MotionProfile", [=] { AutonMotionProfileInit(); },
-        [=] { AutonMotionProfilePeriodic(); });
-    m_autonChooser.AddAutonomous(
-        "Side Auton", [=] { AutonSideInit(); }, [=] { AutonSidePeriodic(); });
+    m_autonChooser.AddAutonomous("DriveForward Autonomous",
+                                 [=] { AutonDriveForward(); });
+    m_autonChooser.AddAutonomous("Right/Left Autonomous",
+                                 [=] { AutonRightLeft(); });
+    m_autonChooser.AddAutonomous("Side Auton", [=] { AutonSide(); });
 }
 
-void Robot::AutonomousInit() {
-    autonTimer.Reset();
-    autonTimer.Start();
+void Robot::DisabledInit() { m_autonChooser.EndAutonomous(); }
 
-    m_drivetrain.ResetEncoders();
-    m_autonChooser.RunAutonomousInit();
-}
+void Robot::AutonomousInit() { m_autonChooser.AwaitStartAutonomous(); }
+
+void Robot::TeleopInit() { m_autonChooser.EndAutonomous(); }
+
+void Robot::TestInit() { m_autonChooser.EndAutonomous(); }
 
 void Robot::RobotPeriodic() { m_claw.RobotPeriodic(); }
 
-void Robot::AutonomousPeriodic() { m_autonChooser.RunAutonomousPeriodic(); }
+void Robot::AutonomousPeriodic() { m_autonChooser.AwaitRunAutonomous(); }
 
 void Robot::TeleopPeriodic() { m_drivetrain.TeleopPeriodic(); }
 
